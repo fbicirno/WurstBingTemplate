@@ -1,0 +1,69 @@
+package ErrorHandling
+import NoWurst
+import public Printing
+import public Real
+import public Integer
+import public String
+import public MagicFunctions
+import GameTimer
+import Hashtable
+import Annotations
+
+@configurable public var MUTE_ERROR_DURATION = 60
+
+constant PRIMARY_ERROR_KEY = -1
+constant HT = compiletime(InitHashtable())
+
+/**
+存储error（）引发的最后一个错误。
+使用包Execute中的try（）时可以检查此错误。
+**/
+public var lastError = ""
+
+/**
+	Allows you to suppress error output.
+	This is primarily useful when you catch
+	an error with try().
+**/
+public var suppressErrorMessages = false
+
+/** error handing function.
+This function is used by libraries and for internal Wurst errors like
+accessing a null-pointer. Overwrite this function to customize error handling.
+
+Outputs an error message and terminates the current thread.
+There is a compiler flag to augment the error messages with stack traces.
+Error messages can also be disabled.
+
+Errors are only displayed once every MUTE_ERROR_DURATION seconds.
+To achieve this, the hash of the string is saved in a hashtable together with a timestamp.
+
+You can also use try() from package Execute to handle an error happening in a callback.
+*/
+@configurable public function error(string msg)
+	if compiletime
+		compileError("ERROR: " + msg)
+	else
+		if not suppressErrorMessages
+			let hash = msg.getHash()
+			if HT.hasInt(PRIMARY_ERROR_KEY, hash)
+				// Error has been printed before
+				if HT.loadInt(PRIMARY_ERROR_KEY, hash) + MUTE_ERROR_DURATION < currentTime
+					// Time to print the error again
+					Log.error(msg + getStackTraceString())
+					HT.saveInt(PRIMARY_ERROR_KEY, hash, currentTime.toInt())
+					HT.saveBoolean(PRIMARY_ERROR_KEY, hash, false)
+				else if HT.hasBoolean(PRIMARY_ERROR_KEY, hash)
+					if not HT.loadBoolean(PRIMARY_ERROR_KEY, hash)
+						Log.error("|cffFF3A29Excessive repeating errors are being omitted")
+						HT.saveBoolean(PRIMARY_ERROR_KEY, hash, true)
+				else
+					Log.error("|cffFF3A29Excessive repeating errors are being omitted")
+					HT.saveBoolean(PRIMARY_ERROR_KEY, hash, true)
+			else
+				HT.saveInt(PRIMARY_ERROR_KEY, hash, currentTime.toInt())
+				Log.error("Message: " + msg + getStackTraceString())
+		// crash the thread:
+		lastError = msg
+		I2S(1 div 0)
+

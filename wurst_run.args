@@ -1,0 +1,29 @@
+When running from vscode, all arguments in this file will be passed to the compiler.
+Any line starting with "-" in this file counts as an argument.
+This means to disable or enable any flag, remove or add the "-" at the start of the line.
+For a list of all arguments visit the manual or run wurstscript.jar without arguments.
+【以下配置wurstscript.jar的运行参数】
+【使用-符号打开参数】
+运行脚本中的所有compiletime函数
+-runcompiletimefunctions
+将compiletime函数生成的对象注入映射
+-injectobjects
+从脚本中删除所有错误消息
+-nodebug
+删除堆栈检查
+-uncheckedDispatch
+局部最优，优化代码行数
+localOptimizations
+禁用PJass检查生成的代码
+-noPJass
+
+stacktraces
+measure
+启用函数内联
+inline
+启用变量名本地优化
+opt
+加快编译速度
+compiletimeCache
+
+

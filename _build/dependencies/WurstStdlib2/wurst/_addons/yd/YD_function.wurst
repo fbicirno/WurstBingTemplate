@@ -1,0 +1,286 @@
+package YD_function
+import CustomValue
+import YD_native
+import MapBounds
+import YD_LuaEngine
+
+@ifNotDefined public function YDWEGetUnitAbilityState ( unit u, integer abilcode, integer state_type ) returns real
+	return EXGetAbilityState(EXGetUnitAbility(u, abilcode), state_type)
+
+@ifNotDefined public function YDWEGetUnitAbilityDataInteger ( unit u, integer abilcode, integer level, integer data_type ) returns integer
+	return EXGetAbilityDataInteger(EXGetUnitAbility(u, abilcode), level, data_type)
+
+@ifNotDefined public function YDWEGetUnitAbilityDataReal ( unit u, integer abilcode, integer level, integer data_type ) returns real
+	return EXGetAbilityDataReal(EXGetUnitAbility(u, abilcode), level, data_type)
+
+@ifNotDefined public function YDWEGetUnitAbilityDataString ( unit u, integer abilcode, integer level, integer data_type ) returns string
+	return EXGetAbilityDataString(EXGetUnitAbility(u, abilcode), level, data_type)
+
+@ifNotDefined public function YDWESetUnitAbilityState ( unit u, integer abilcode, integer state_type, real value ) returns boolean
+	return EXSetAbilityState(EXGetUnitAbility(u, abilcode), state_type, value)
+
+@ifNotDefined public function YDWESetUnitAbilityDataInteger ( unit u, integer abilcode, integer level, integer data_type, integer value ) returns boolean
+	return EXSetAbilityDataInteger(EXGetUnitAbility(u, abilcode), level, data_type, value)
+
+@ifNotDefined public function YDWESetUnitAbilityDataReal ( unit u, integer abilcode, integer level, integer data_type, real value ) returns boolean
+	return EXSetAbilityDataReal(EXGetUnitAbility(u, abilcode), level, data_type, value)
+
+@ifNotDefined public function YDWESetUnitAbilityDataString ( unit u, integer abilcode, integer level, integer data_type, string value ) returns boolean
+	return EXSetAbilityDataString(EXGetUnitAbility(u, abilcode), level, data_type, value)
+
+// @ifNotDefined public function YDWEUnitTransform ( unit u, integer abilcode, integer targetid ) 
+// 	UnitAddAbility(u, abilcode)
+// 	EXSetAbilityDataInteger(EXGetUnitAbility(u, abilcode), 1, 117, GetUnitTypeId(u))
+// 	EXSetAbilityAEmeDataA(EXGetUnitAbility(u, abilcode), GetUnitTypeId(u))
+// 	UnitRemoveAbility(u, abilcode)
+// 	UnitAddAbility(u, abilcode)
+// 	EXSetAbilityAEmeDataA(EXGetUnitAbility(u, abilcode), targetid)
+// 	UnitRemoveAbility(u, abilcode)
+
+
+@ifNotDefined public function YDWEGetItemDataString ( integer itemcode, integer data_type ) returns string
+	return EXGetItemDataString(itemcode, data_type)
+
+
+@ifNotDefined public function YDWESetItemDataString ( integer itemcode, integer data_type, string value ) returns boolean
+	return EXSetItemDataString(itemcode, data_type, value)
+
+@ifNotDefined public function YDWEIsEventPhysicalDamage ( ) returns boolean
+    return 0 != EXGetEventDamageData(1)
+
+@ifNotDefined public function YDWEIsEventAttackDamage ( ) returns boolean
+    return 0 != EXGetEventDamageData(2)
+
+@ifNotDefined public function YDWEIsEventRangedDamage (  ) returns boolean
+    return 0 != EXGetEventDamageData(3)
+
+@ifNotDefined public function YDWEIsEventDamageType (damagetype damageType ) returns boolean
+    return damageType == ConvertDamageType(EXGetEventDamageData(4))
+
+@ifNotDefined public function YDWEIsEventWeaponType (weapontype weaponType ) returns boolean
+    return weaponType == ConvertWeaponType(EXGetEventDamageData(5))
+
+@ifNotDefined public function YDWEIsEventAttackType (attacktype attackType ) returns boolean
+    return attackType == ConvertAttackType(EXGetEventDamageData(6))
+
+@ifNotDefined public function YDWESetEventDamage (real amount ) returns boolean
+    return EXSetEventDamage(amount)
+
+@ifNotDefined public function YDWESetEffectLoc ( effect e, location loc )
+    EXSetEffectXY(e, GetLocationX(loc), GetLocationY(loc))
+
+@ifNotDefined public function YDWEUnitAddStun ( unit u)
+    EXPauseUnit(u, true)
+
+@ifNotDefined public function YDWEUnitRemoveStun ( unit u )
+    EXPauseUnit(u, false)
+
+@ifNotDefined public function YDWEDisplayChat ( player p, integer chat_recipient, string message )
+    EXDisplayChat(p, chat_recipient, message)
+
+
+// @inline public function unit.exTransform ( int targetid ) 
+//     YDWEUnitTransform(this,'AEme',targetid)
+
+public function unit.setCollisionType(bool flag,int collisionType)
+    EXSetUnitCollisionType(flag,this, collisionType)
+public function unit.setMoveType(int moveType)
+    EXSetUnitMoveType(this, moveType)
+public function unit.setFacing(real angle)
+    EXSetUnitFacing(this, angle)
+public function unit.setPause(bool flag)
+    EXPauseUnit(this, flag)
+
+
+// @inline public function exBlendButtonIcon(string origin,string plus,string blend) returns bool
+//     return EXBlendButtonIcon(origin,plus,blend)
+
+
+public class YD_UnitState
+    static unitstate hp       = ConvertUnitState(0)    //"生命值"
+    static unitstate maxHp    = ConvertUnitState(1)    //"最大生命值"
+    static unitstate mp       = ConvertUnitState(2)    //"魔法值"
+    static unitstate maxMp    = ConvertUnitState(3)    //"最大魔法值"
+    static unitstate atkDice  = ConvertUnitState(0x10) //"骰子数量 [JAPI]"
+    static unitstate atkSide  = ConvertUnitState(0x11) //"骰子面数 [JAPI]"
+    static unitstate atkBase  = ConvertUnitState(0x12) //"基础伤害 [JAPI]"
+    static unitstate atkBonus = ConvertUnitState(0x13) //"附加伤害 [JAPI]"
+    static unitstate atkMin   = ConvertUnitState(0x14) //"攻击最小值 [JAPI]"
+    static unitstate atkMax   = ConvertUnitState(0x15) //"攻击最大值 [JAPI]"
+    static unitstate atkRange = ConvertUnitState(0x16) //"攻击范围 [JAPI]"
+    static unitstate atkCool  = ConvertUnitState(0x25) //"攻击间隔 [JAPI]"
+    static unitstate atkSpeed = ConvertUnitState(0x51) //"攻击速度 [JAPI] 1——5 最大5"
+    static unitstate armor    = ConvertUnitState(0x20) //"护甲 [JAPI]"
+
+public class  YD_MoveType
+    static int NONE     =0x00 //"没有"
+    static int NO       =0x01 //"无法移动"
+    static int FOOT     =0x02 //"步行"WESTRING_UE_MOVETYPE_FOOT
+    static int FLY      =0x04 //"飞行"WESTRING_UE_MOVETYPE_FLY
+    static int MINE     =0x08 //"地雷"
+    static int WINDWALK =0x10 //"疾风步"
+    static int UNKNOWN  =0x20 //"未知"
+    static int FLOAT    =0x40 //"漂浮"WESTRING_UE_MOVETYPE_FLOAT
+    static int AMPH     =0x80 //"两栖"WESTRING_UE_MOVETYPE_AMPH
+
+public class YD_CollisionType
+    static int UNIT  = 1 //"单位"
+    static int BUILD = 3 //"建筑"
+    
+public class YD_DAMAGE
+    static constant integer VAILD       = 0
+    static constant integer IS_PHYSICAL = 1
+    static constant integer IS_ATTACK   = 2
+    static constant integer IS_RANGED   = 3
+    static constant integer DAMAGE_TYPE = 4
+    static constant integer WEAPON_TYPE = 5
+    static constant integer ATTACK_TYPE = 6
+
+public class YD_CHAT_RECIPIENT
+    static constant int ALL       = 0 // [所有人]
+    static constant int ALLIES    = 1 // [盟友]
+    static constant int OBSERVERS = 2 // [观看者]
+    static constant int REFEREES  = 2 // [裁判]
+    static constant int PRIVATE   = 3 // [私人的]
+
+public class YD_OBJECT_TYPE
+    static constant int YDWE_OBJECT_TYPE_ABILITY      = 0
+    static constant int YDWE_OBJECT_TYPE_BUFF         = 1
+    static constant int YDWE_OBJECT_TYPE_UNIT         = 2
+    static constant int YDWE_OBJECT_TYPE_ITEM         = 3
+    static constant int YDWE_OBJECT_TYPE_UPGRADE      = 4
+    static constant int YDWE_OBJECT_TYPE_DOODAD       = 5
+    static constant int YDWE_OBJECT_TYPE_DESTRUCTABLE = 6
+
+
+@inline public function int.getAbilIcon() returns string
+    return getAbilityIcon(this)
+@inline public function int.getAbilTooltip(int lv) returns string
+    return getAbilityTooltip (this, lv)
+@inline public function int.getAbilExtendedTooltip(int lv) returns string
+    return getAbilityExtendedTooltip(this, lv)
+
+@inline public function int.setAbilIcon(string path)
+    setAbilityIcon(this,path)
+@inline public function int.setAbilTooltip(int lv,string text)
+    setAbilityTooltip (this,text, lv)
+@inline public function int.setAbilExtendedTooltip(int lv,string text)
+    setAbilityExtendedTooltip(this,text, lv)
+@inline public function int.setAbilCooldown(int lv,real cooldown)
+    setAbilityCooldown(this,cooldown,lv)
+/** YDWE 设置技能CD*/
+@inline public function unit.setAbilCooldown(integer abilcode , real cooldown) returns bool
+    return YDWESetUnitAbilityState( this, abilcode, YDOBJ_ABY.COOLDOWN, cooldown )
+@inline public function unit.setAbilDataInt(integer data_type,integer abilcode,int level,int val) returns bool
+    return YDWESetUnitAbilityDataInteger(this, abilcode, level, data_type, val)
+@inline public function unit.setAbilData(integer data_type,integer abilcode,int level,real val) returns bool
+    return YDWESetUnitAbilityDataReal(this, abilcode, level, data_type, val)
+@inline public function unit.setAbilData(integer data_type,integer abilcode,int level,string val) returns bool
+    return YDWESetUnitAbilityDataString(this, abilcode, level, data_type, val)
+
+
+public function unit.setAbilDataA(player p,integer data_type,integer abilcode,int level,string val)
+    var s = this.getAbilDataString(data_type, abilcode, level)
+    if localPlayer == p
+        s = val
+    YDWESetUnitAbilityDataString(this, abilcode, level, data_type, s)
+/** YDWE 获取技能CD*/
+@inline public function unit.getAbilCooldown(integer abilcode ) returns real
+    return YDWEGetUnitAbilityState( this, abilcode, YDOBJ_ABY.COOLDOWN )
+@inline public function unit.getAbilDataInt(integer data_type,integer abilcode,int level) returns int
+    return YDWEGetUnitAbilityDataInteger(this, abilcode, level, data_type)
+@inline public function unit.getAbilDataReal(integer data_type,integer abilcode,int level) returns real
+    return YDWEGetUnitAbilityDataReal(this, abilcode, level, data_type)
+@inline public function unit.getAbilDataString(integer data_type,integer abilcode,int level) returns string
+    return YDWEGetUnitAbilityDataString(this, abilcode, level, data_type)
+
+
+@inline public function item.getTypeData(integer data_type) returns string
+    return YDWEGetItemDataString( this.getTypeId(), data_type)
+@inline public function item.setTypeData(integer data_type,string val) returns bool
+    return YDWESetItemDataString( this.getTypeId(), data_type, val)
+@inline public function int.getItemTypeData(integer data_type) returns string
+    return YDWEGetItemDataString( this, data_type)
+@inline public function int.setItemTypeData(integer data_type,string val) returns bool
+    return YDWESetItemDataString( this, data_type, val)
+
+//物品不创建一次就无法获取信息
+function YDitemInit(int itemid)
+    if itemid.getCustomV<int,bool>("初始化".getHash())==false
+        let itm=createItem(itemid, boundMin)
+        itm.setVisible(false)
+        itm.remove()
+        itemid.setCustomV("初始化".getHash(), true)
+        // printDebug("创建yditem"+itemid.luaId2Str())
+
+//获取物品常用信息-
+public function int.getItemNameEX() returns string
+    // YDitemInit(this)
+    // return YDWEGetItemDataString( this, 4)
+    return this.getItemLuaSlkStr("Tip")
+public function int.getItemTipEX() returns string
+    // YDitemInit(this)
+    // return YDWEGetItemDataString( this, 3)
+    return this.getItemLuaSlkStr("Description")
+public function int.getItemIconEX() returns string
+    // YDitemInit(this)
+    // return YDWEGetItemDataString( this, 1)
+    return this.getItemLuaSlkStr("Art")
+// @inline public function int.exBuffData(integer data_type) returns string
+//     return EXGetBuffDataString(this , data_type)
+// @inline public function int.exBuffData(integer data_type, string value) returns bool
+//     return EXSetBuffDataString(this , data_type , value)
+
+public class YDOBJ_ITEM
+    static constant int TIP = 4
+    static constant int UBERTIP = 3
+    static constant int ART = 1
+
+public class YDOBJ_BUFF
+    static constant int TIP = 2
+    static constant int UBERTIP = 3
+    static constant int ART = 1
+
+public class YDOBJ_ABY
+
+    static constant integer COOLDOWN          = 1   // 状态 不是属性
+
+    static constant integer TARGS             = 100 // integer
+    static constant integer CAST              = 101 // real
+    static constant integer DUR               = 102 // real
+    static constant integer HERODUR           = 103 // real
+    static constant integer COST              = 104 // integer
+    static constant integer COOL              = 105 // real
+    static constant integer AREA              = 106 // real
+    static constant integer RNG               = 107 // real
+    static constant integer DATA_A            = 108 // real
+    static constant integer DATA_B            = 109 // real
+    static constant integer DATA_C            = 110 // real
+    static constant integer DATA_D            = 111 // real
+    static constant integer DATA_E            = 112 // real
+    static constant integer DATA_F            = 113 // real
+    static constant integer DATA_G            = 114 // real
+    static constant integer DATA_H            = 115 // real
+    static constant integer DATA_I            = 116 // real
+    static constant integer UNITID            = 117 // integer
+    static constant integer HOTKET            = 200 // integer
+    static constant integer UNHOTKET          = 201 // integer
+    static constant integer RESEARCH_HOTKEY   = 202 // integer
+    static constant integer NAME              = 203 // string
+    static constant integer ART               = 204 // string
+    static constant integer TARGET_ART        = 205 // string
+    static constant integer CASTER_ART        = 206 // string
+    static constant integer EFFECT_ART        = 207 // string
+    static constant integer AREAEFFECT_ART    = 208 // string
+    static constant integer MISSILE_ART       = 209 // string
+    static constant integer SPECIAL_ART       = 210 // string
+    static constant integer LIGHTNING_EFFECT  = 211 // string
+    static constant integer BUFF_TIP          = 212 // string
+    static constant integer BUFF_UBERTIP      = 213 // string
+    static constant integer RESEARCH_TIP      = 214 // string
+    static constant integer TIP               = 215 // string
+    static constant integer UNTIP             = 216 // string
+    static constant integer RESEARCH_UBERTIP  = 217 // string
+    static constant integer UBERTIP           = 218 // string
+    static constant integer UNUBERTIP         = 219 // string
+    static constant integer UNART             = 220 // string

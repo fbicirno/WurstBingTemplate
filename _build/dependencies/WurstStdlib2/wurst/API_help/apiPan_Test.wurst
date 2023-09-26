@@ -1,0 +1,119 @@
+package apiPan_Test
+import ClosureEvents
+import ClosureForGroups
+import HashMap
+import HashList
+import DummyCaster
+import Orders
+import ClosureTimers
+import AbilityIds
+import InstantDummyCaster
+import DummyRecycler
+
+/*
+API总览手册
+提供依赖库的各种功能 的 使用案例。
+
+*/
+//=========替换魔兽原生函数功能============
+
+/*
+原版触发器的创建——>EventListener
+监听事件:最简单的用#add 如下：
+    > EventListener.add(EVENT_PLAYER_UNIT_DEATH) ->
+    >	 [actions]<任意单位死亡>
+
+    > EventListener.add(someUnit, EVENT_PLAYER_UNIT_DEATH) ->
+    >	 [actions]<'someUnit'死亡>
+
+施法事件：通过`on`前缀 如下：
+    > EventListener.onCast(MY_SPELL_ID) (caster) ->
+    >	 [actions]<任意单位释放无目标技能>
+
+    > EventListener.onCast(myUnit, MY_SPELL_ID) (caster) ->
+    >	 [actions]<由'myUnit'释放的无目标技能>
+
+    > EventListener.onPointCast(myUnit, MY_SPELL_ID) (caster, target) ->
+    >	 [actions]<释放目标点技能. 'target'是vec2坐标>
+*/
+@test function expEventListener()
+    let u=createUnit(Player(0), 'hfoo', vec2(0, 0), angle(0))
+    //鼠标停在EventListener上查看信息
+    // EventListener.add(u, EVENT_PLAYER_UNIT_DEATH) -> 
+    //     let triggerUnit=GetTriggerUnit()
+    //     print(triggerUnit.getName())
+    EventListener.onPointCast('A001') (caster, target) ->
+        caster.setPos(target)
+        //让施法者移动到施法目标点
+// 临时单位组——>ForEach
+@test function expForEach()
+    //选择圈里的单位杀掉
+    forUnitsInRange(vec2(5, 5), 500) (unit u) ->
+        u.kill()
+    //选择圈里的单位杀掉(杀10个)
+    forUnitsInRangeCounted(vec2(0, 0), 500, 10) (unit u) ->
+        u.kill()
+    //杀掉玩家1选择的单位
+    forUnitsSelected(Player(0)) (unit u) ->
+        u.kill()
+    //选择圆圈里的可破坏物(通过inRect模拟，原生只支持矩形选择)
+    forDestructablesInRange(vec2(0, 0), 500) (destructable d) ->
+        print(d.getName())
+// 哈希表使用技巧
+@test function expHashMap()
+    // 哈希表[K,V]键值对组——>HashMap
+    let map1=new HashMap<int,string>()
+    map1.put(1,"你好")
+    print(map1.get(1))
+    //==做一个物品权重抽奖机==
+    let the_map=new IterableMap<int,int>()
+    let award_list=new HashList<int>()
+    the_map.put('I001', 8)
+    the_map.put('I002', 8)
+    the_map.put('I003', 2)
+    the_map.put('I004', 1)
+    for each_item in the_map
+        for i=0 to the_map.get(each_item)
+            //添加权重次数的物品到列表中
+            award_list.add(each_item)
+    //获得最终奖品
+    let award_item=createItem(award_list.getRandomElement(), vec2(0, 0))
+    print("最终奖品是："+award_item.getName())
+// 总是创建马甲——>Dummy
+@test function expDummy()
+    let target=GetTriggerUnit()
+    //【持续施法】延迟15秒，放4个暴风雪
+    new DummyCaster()
+	..owner(GetTriggerPlayer())
+	..delay(15)
+	..castPoint('A001', 1, OrderIds.blizzard, GetTriggerUnit().getPos() + vec2(128, 0))
+	..castPoint('A001', 1, OrderIds.blizzard, GetTriggerUnit().getPos() + vec2(-128, 0))
+	..castPoint('A001', 1, OrderIds.blizzard, GetTriggerUnit().getPos() + vec2(0, 128))
+	..castPoint('A001', 1, OrderIds.blizzard, GetTriggerUnit().getPos() + vec2(0, -128))
+    //用毒药攻击一次
+    new DummyCaster().castTarget(AbilityIds.poisonSting, 1, OrderIds.attackonce, GetTriggerUnit())
+    //【立刻释放】非通魔/穿刺的瞬间释放技能
+    InstantDummyCaster.castTarget(DUMMY_PLAYER, 'A006', 1, OrderIds.polymorph, GetTriggerUnit())
+    //获得一个非蝗虫马甲单位(不要杀死/销毁它！)
+    let dummyUnit = DummyRecycler.get(ZERO2, 0 .fromDeg())
+    dummyUnit.damageTarget(target, 100)
+    DummyRecycler.recycle(dummyUnit)
+
+// 临时计时器——>DoAfter...
+@test function expDoAfter()
+    let exitaaaaa=false
+    //和逆天计时器体验一样的闭包计时器
+    doAfter(1) -> 
+        print("运行1秒后结束")
+    doPeriodically(1) (CallbackPeriodic cb) ->
+        print("每秒一次")
+    doPeriodicallyCounted(1, 10) (CallbackCounted cb) ->
+        print("每秒一次，但10次后关闭")
+        if cb.isLast()
+            print("最后一次运行")
+        if exitaaaaa==true
+            cb.stop()
+            print("强制结束")
+            
+    nullTimer() -> 
+        print("地图0秒运行")

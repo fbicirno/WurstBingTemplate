@@ -1,0 +1,547 @@
+package dzApiHelp
+import NoWurst
+import Annotations
+// //DzFrameSetScript  注册ui事件的事件ID
+
+// class  FrameEventsID
+//     static constant NONE                        = 0
+//     static constant PRESSED                     = 1  // 鼠标点击
+//     static constant MOUSE_ENTER                 = 2  // 鼠标进入
+//     static constant MOUSE_LEAVE                 = 3  // 鼠标离开
+//     static constant MOUSE_UP                    = 4  // 鼠标释放
+//     //目前无效
+//     static constant MOUSE_DOWN                  = 5      // 鼠标弹起(无效)
+//     static constant MOUSE_WHEEL                 = 6      // 鼠标轮滚
+//     static constant CHECKBOX_CHECKED            = 7      // 复选框-被选中
+//     static constant CHECKBOX_UNCHECKED          = 8      // 复选框-取消选中
+//     static constant EDITBOX_TEXT_CHANGED        = 9      // 输入框-改变文本
+//     static constant POPUPMENU_ITEM_CHANGE_START = 10     // 菜单-被改变
+//     static constant POPUPMENU_ITEM_CHANGED      = 11     // 菜单-项目被改变
+//     static constant MOUSE_DOUBLECLICK           = 12     // 鼠标双击
+//     static constant SPRITE_ANIM_UPDATE          = 13     // 动画更新(无效)
+// class FrameTypes
+//     static constant BACKDROP       = "BACKDROP"       //背景
+//     static constant HIGHLIGHT      = "HIGHLIGHT"      //高亮
+//     static constant MODEL          = "MODEL"          //静态模型
+//     static constant CONTROL        = "CONTROL"        //控制
+//     static constant CHATDISPLAY    = "CHATDISPLAY"    //聊天显示
+//     static constant SPRITE         = "SPRITE"         //动态模型
+//     static constant DIALOG         = "DIALOG"         //对话
+//     static constant SLIDER         = "SLIDER"         //滑块
+//     static constant SCROLLBAR      = "SCROLLBAR"      //滚动条
+//     static constant TEXT           = "TEXT"           //文本
+//     static constant TEXTAREA       = "TEXTAREA"       //文本域
+//     static constant BUTTON         = "BUTTON"         //按钮
+//     static constant TEXTBUTTON     = "TEXTBUTTON"     //文本按钮(TEXT  + BUTTON )
+//     static constant GLUEBUTTON     = "GLUEBUTTON"     //固定按钮
+//     static constant GLUETEXTBUTTON = "GLUETEXTBUTTON" //固定文本按钮(继承TEXTBUTTON,内嵌TEXT)
+//     static constant FRAME          = "FRAME"          //框架
+//     static constant MENU           = "MENU"           //菜单
+//     static constant POPUPMENU      = "POPUPMENU"      //弹出菜单
+//     static constant GLUEPOPUPMENU  = "GLUEPOPUPMENU"  //固定弹出菜单
+//     static constant CHECKBOX       = "CHECKBOX"       //复选框
+//     static constant GLUECHECKBOX   = "GLUECHECKBOX"   //固定复选框
+//     static constant EDITBOX        = "EDITBOX"        //编辑框
+//     static constant GLUEEDITBOX    = "GLUEEDITBOX"    //固定编辑框
+//     static constant LISTBOX        = "LISTBOX"        //列表框
+//     static constant SIMPLEFRAME    = "SIMPLEFRAME"    //简单框架
+//     static constant SIMPLESTATUSBAR= "SIMPLESTATUSBAR"//简易工具栏
+//     static constant SIMPLECHECKBOX = "SIMPLECHECKBOX" //简单复选框
+//     static constant SIMPLEBUTTON   = "SIMPLEBUTTON"   //简单按钮
+// // bzapi v1.27
+// //update time:2017-1-1
+
+// public tuple oskeytype(int id)
+
+// public constant OSKEY_BACKSPACE                      = oskeytype(0x08)
+// public constant OSKEY_TAB                            = oskeytype(0x09)
+// public constant OSKEY_CLEAR                          = oskeytype(0x0C)
+// public constant OSKEY_RETURN                         = oskeytype(0x0D)
+// public constant OSKEY_SHIFT                          = oskeytype(0x10)
+// public constant OSKEY_CONTROL                        = oskeytype(0x11)
+// public constant OSKEY_ALT                            = oskeytype(0x12)
+// public constant OSKEY_PAUSE                          = oskeytype(0x13)
+// public constant OSKEY_CAPSLOCK                       = oskeytype(0x14)
+// public constant OSKEY_KANA                           = oskeytype(0x15)
+// public constant OSKEY_HANGUL                         = oskeytype(0x15)
+// public constant OSKEY_JUNJA                          = oskeytype(0x17)
+// public constant OSKEY_FINAL                          = oskeytype(0x18)
+// public constant OSKEY_HANJA                          = oskeytype(0x19)
+// public constant OSKEY_KANJI                          = oskeytype(0x19)
+// public constant OSKEY_ESCAPE                         = oskeytype(0x1B)
+// public constant OSKEY_CONVERT                        = oskeytype(0x1C)
+// public constant OSKEY_NONCONVERT                     = oskeytype(0x1D)
+// public constant OSKEY_ACCEPT                         = oskeytype(0x1E)
+// public constant OSKEY_MODECHANGE                     = oskeytype(0x1F)
+// public constant OSKEY_SPACE                          = oskeytype(0x20)
+// public constant OSKEY_PAGEUP                         = oskeytype(0x21)
+// public constant OSKEY_PAGEDOWN                       = oskeytype(0x22)
+// public constant OSKEY_END                            = oskeytype(0x23)
+// public constant OSKEY_HOME                           = oskeytype(0x24)
+// public constant OSKEY_LEFT                           = oskeytype(0x25)
+// public constant OSKEY_UP                             = oskeytype(0x26)
+// public constant OSKEY_RIGHT                          = oskeytype(0x27)
+// public constant OSKEY_DOWN                           = oskeytype(0x28)
+// public constant OSKEY_SELECT                         = oskeytype(0x29)
+// public constant OSKEY_PRINT                          = oskeytype(0x2A)
+// public constant OSKEY_EXECUTE                        = oskeytype(0x2B)
+// public constant OSKEY_PRINTSCREEN                    = oskeytype(0x2C)
+// public constant OSKEY_INSERT                         = oskeytype(0x2D)
+// public constant OSKEY_DELETE                         = oskeytype(0x2E)
+// public constant OSKEY_HELP                           = oskeytype(0x2F)
+// public constant OSKEY_0                              = oskeytype(0x30)
+// public constant OSKEY_1                              = oskeytype(0x31)
+// public constant OSKEY_2                              = oskeytype(0x32)
+// public constant OSKEY_3                              = oskeytype(0x33)
+// public constant OSKEY_4                              = oskeytype(0x34)
+// public constant OSKEY_5                              = oskeytype(0x35)
+// public constant OSKEY_6                              = oskeytype(0x36)
+// public constant OSKEY_7                              = oskeytype(0x37)
+// public constant OSKEY_8                              = oskeytype(0x38)
+// public constant OSKEY_9                              = oskeytype(0x39)
+// public constant OSKEY_A                              = oskeytype(0x41)
+// public constant OSKEY_B                              = oskeytype(0x42)
+// public constant OSKEY_C                              = oskeytype(0x43)
+// public constant OSKEY_D                              = oskeytype(0x44)
+// public constant OSKEY_E                              = oskeytype(0x45)
+// public constant OSKEY_F                              = oskeytype(0x46)
+// public constant OSKEY_G                              = oskeytype(0x47)
+// public constant OSKEY_H                              = oskeytype(0x48)
+// public constant OSKEY_I                              = oskeytype(0x49)
+// public constant OSKEY_J                              = oskeytype(0x4A)
+// public constant OSKEY_K                              = oskeytype(0x4B)
+// public constant OSKEY_L                              = oskeytype(0x4C)
+// public constant OSKEY_M                              = oskeytype(0x4D)
+// public constant OSKEY_N                              = oskeytype(0x4E)
+// public constant OSKEY_O                              = oskeytype(0x4F)
+// public constant OSKEY_P                              = oskeytype(0x50)
+// public constant OSKEY_Q                              = oskeytype(0x51)
+// public constant OSKEY_R                              = oskeytype(0x52)
+// public constant OSKEY_S                              = oskeytype(0x53)
+// public constant OSKEY_T                              = oskeytype(0x54)
+// public constant OSKEY_U                              = oskeytype(0x55)
+// public constant OSKEY_V                              = oskeytype(0x56)
+// public constant OSKEY_W                              = oskeytype(0x57)
+// public constant OSKEY_X                              = oskeytype(0x58)
+// public constant OSKEY_Y                              = oskeytype(0x59)
+// public constant OSKEY_Z                              = oskeytype(0x5A)
+// public constant OSKEY_LMETA                          = oskeytype(0x5B)
+// public constant OSKEY_RMETA                          = oskeytype(0x5C)
+// public constant OSKEY_APPS                           = oskeytype(0x5D)
+// public constant OSKEY_SLEEP                          = oskeytype(0x5F)
+// public constant OSKEY_NUMPAD0                        = oskeytype(0x60)
+// public constant OSKEY_NUMPAD1                        = oskeytype(0x61)
+// public constant OSKEY_NUMPAD2                        = oskeytype(0x62)
+// public constant OSKEY_NUMPAD3                        = oskeytype(0x63)
+// public constant OSKEY_NUMPAD4                        = oskeytype(0x64)
+// public constant OSKEY_NUMPAD5                        = oskeytype(0x65)
+// public constant OSKEY_NUMPAD6                        = oskeytype(0x66)
+// public constant OSKEY_NUMPAD7                        = oskeytype(0x67)
+// public constant OSKEY_NUMPAD8                        = oskeytype(0x68)
+// public constant OSKEY_NUMPAD9                        = oskeytype(0x69)
+// public constant OSKEY_MULTIPLY                       = oskeytype(0x6A)
+// public constant OSKEY_ADD                            = oskeytype(0x6B)
+// public constant OSKEY_SEPARATOR                      = oskeytype(0x6C)
+// public constant OSKEY_SUBTRACT                       = oskeytype(0x6D)
+// public constant OSKEY_DECIMAL                        = oskeytype(0x6E)
+// public constant OSKEY_DIVIDE                         = oskeytype(0x6F)
+// public constant OSKEY_F1                             = oskeytype(0x70)
+// public constant OSKEY_F2                             = oskeytype(0x71)
+// public constant OSKEY_F3                             = oskeytype(0x72)
+// public constant OSKEY_F4                             = oskeytype(0x73)
+// public constant OSKEY_F5                             = oskeytype(0x74)
+// public constant OSKEY_F6                             = oskeytype(0x75)
+// public constant OSKEY_F7                             = oskeytype(0x76)
+// public constant OSKEY_F8                             = oskeytype(0x77)
+// public constant OSKEY_F9                             = oskeytype(0x78)
+// public constant OSKEY_F10                            = oskeytype(0x79)
+// public constant OSKEY_F11                            = oskeytype(0x7A)
+// public constant OSKEY_F12                            = oskeytype(0x7B)
+// public constant OSKEY_F13                            = oskeytype(0x7C)
+// public constant OSKEY_F14                            = oskeytype(0x7D)
+// public constant OSKEY_F15                            = oskeytype(0x7E)
+// public constant OSKEY_F16                            = oskeytype(0x7F)
+// public constant OSKEY_F17                            = oskeytype(0x80)
+// public constant OSKEY_F18                            = oskeytype(0x81)
+// public constant OSKEY_F19                            = oskeytype(0x82)
+// public constant OSKEY_F20                            = oskeytype(0x83)
+// public constant OSKEY_F21                            = oskeytype(0x84)
+// public constant OSKEY_F22                            = oskeytype(0x85)
+// public constant OSKEY_F23                            = oskeytype(0x86)
+// public constant OSKEY_F24                            = oskeytype(0x87)
+// public constant OSKEY_NUMLOCK                        = oskeytype(0x90)
+// public constant OSKEY_SCROLLLOCK                     = oskeytype(0x91)
+// public constant OSKEY_OEM_NEC_EQUAL                  = oskeytype(0x92)
+// public constant OSKEY_OEM_FJ_JISHO                   = oskeytype(0x92)
+// public constant OSKEY_OEM_FJ_MASSHOU                 = oskeytype(0x93)
+// public constant OSKEY_OEM_FJ_TOUROKU                 = oskeytype(0x94)
+// public constant OSKEY_OEM_FJ_LOYA                    = oskeytype(0x95)
+// public constant OSKEY_OEM_FJ_ROYA                    = oskeytype(0x96)
+// public constant OSKEY_LSHIFT                         = oskeytype(0xA0)
+// public constant OSKEY_RSHIFT                         = oskeytype(0xA1)
+// public constant OSKEY_LCONTROL                       = oskeytype(0xA2)
+// public constant OSKEY_RCONTROL                       = oskeytype(0xA3)
+// public constant OSKEY_LALT                           = oskeytype(0xA4)
+// public constant OSKEY_RALT                           = oskeytype(0xA5)
+// public constant OSKEY_BROWSER_BACK                   = oskeytype(0xA6)
+// public constant OSKEY_BROWSER_FORWARD                = oskeytype(0xA7)
+// public constant OSKEY_BROWSER_REFRESH                = oskeytype(0xA8)
+// public constant OSKEY_BROWSER_STOP                   = oskeytype(0xA9)
+// public constant OSKEY_BROWSER_SEARCH                 = oskeytype(0xAA)
+// public constant OSKEY_BROWSER_FAVORITES              = oskeytype(0xAB)
+// public constant OSKEY_BROWSER_HOME                   = oskeytype(0xAC)
+// public constant OSKEY_VOLUME_MUTE                    = oskeytype(0xAD)
+// public constant OSKEY_VOLUME_DOWN                    = oskeytype(0xAE)
+// public constant OSKEY_VOLUME_UP                      = oskeytype(0xAF)
+// public constant OSKEY_MEDIA_NEXT_TRACK               = oskeytype(0xB0)
+// public constant OSKEY_MEDIA_PREV_TRACK               = oskeytype(0xB1)
+// public constant OSKEY_MEDIA_STOP                     = oskeytype(0xB2)
+// public constant OSKEY_MEDIA_PLAY_PAUSE               = oskeytype(0xB3)
+// public constant OSKEY_LAUNCH_MAIL                    = oskeytype(0xB4)
+// public constant OSKEY_LAUNCH_MEDIA_SELECT            = oskeytype(0xB5)
+// public constant OSKEY_LAUNCH_APP1                    = oskeytype(0xB6)
+// public constant OSKEY_LAUNCH_APP2                    = oskeytype(0xB7)
+// public constant OSKEY_OEM_1                          = oskeytype(0xBA)
+// public constant OSKEY_OEM_PLUS                       = oskeytype(0xBB)
+// public constant OSKEY_OEM_COMMA                      = oskeytype(0xBC)
+// public constant OSKEY_OEM_MINUS                      = oskeytype(0xBD)
+// public constant OSKEY_OEM_PERIOD                     = oskeytype(0xBE)
+// public constant OSKEY_OEM_2                          = oskeytype(0xBF)
+// public constant OSKEY_OEM_3                          = oskeytype(0xC0)
+// public constant OSKEY_OEM_4                          = oskeytype(0xDB)
+// public constant OSKEY_OEM_5                          = oskeytype(0xDC)
+// public constant OSKEY_OEM_6                          = oskeytype(0xDD)
+// public constant OSKEY_OEM_7                          = oskeytype(0xDE)
+// public constant OSKEY_OEM_8                          = oskeytype(0xDF)
+// public constant OSKEY_OEM_AX                         = oskeytype(0xE1)
+// public constant OSKEY_OEM_102                        = oskeytype(0xE2)
+// public constant OSKEY_ICO_HELP                       = oskeytype(0xE3)
+// public constant OSKEY_ICO_00                         = oskeytype(0xE4)
+// public constant OSKEY_PROCESSKEY                     = oskeytype(0xE5)
+// public constant OSKEY_ICO_CLEAR                      = oskeytype(0xE6)
+// public constant OSKEY_PACKET                         = oskeytype(0xE7)
+// public constant OSKEY_OEM_RESET                      = oskeytype(0xE9)
+// public constant OSKEY_OEM_JUMP                       = oskeytype(0xEA)
+// public constant OSKEY_OEM_PA1                        = oskeytype(0xEB)
+// public constant OSKEY_OEM_PA2                        = oskeytype(0xEC)
+// public constant OSKEY_OEM_PA3                        = oskeytype(0xED)
+// public constant OSKEY_OEM_WSCTRL                     = oskeytype(0xEE)
+// public constant OSKEY_OEM_CUSEL                      = oskeytype(0xEF)
+// public constant OSKEY_OEM_ATTN                       = oskeytype(0xF0)
+// public constant OSKEY_OEM_FINISH                     = oskeytype(0xF1)
+// public constant OSKEY_OEM_COPY                       = oskeytype(0xF2)
+// public constant OSKEY_OEM_AUTO                       = oskeytype(0xF3)
+// public constant OSKEY_OEM_ENLW                       = oskeytype(0xF4)
+// public constant OSKEY_OEM_BACKTAB                    = oskeytype(0xF5)
+// public constant OSKEY_ATTN                           = oskeytype(0xF6)
+// public constant OSKEY_CRSEL                          = oskeytype(0xF7)
+// public constant OSKEY_EXSEL                          = oskeytype(0xF8)
+// public constant OSKEY_EREOF                          = oskeytype(0xF9)
+// public constant OSKEY_PLAY                           = oskeytype(0xFA)
+// public constant OSKEY_ZOOM                           = oskeytype(0xFB)
+// public constant OSKEY_NONAME                         = oskeytype(0xFC)
+// public constant OSKEY_PA1                            = oskeytype(0xFD)
+// public constant OSKEY_OEM_CLEAR                      = oskeytype(0xFE)
+
+
+
+// // 硬件
+// /**获取鼠标在游戏内的坐标X*/
+// @ifNotDefined public native DzGetMouseTerrainX () returns real
+// /**获取鼠标在游戏内的坐标y*/
+// @ifNotDefined public native DzGetMouseTerrainY () returns real
+// /**获取鼠标在游戏内的坐标z*/
+// @ifNotDefined public native DzGetMouseTerrainZ () returns real
+// /**鼠标是否在游戏内*/
+// @ifNotDefined public native DzIsMouseOverUI () returns bool
+// /**获取鼠标在屏幕的坐标X*/
+// @ifNotDefined public native DzGetMouseX () returns int
+// /**获取鼠标在屏幕的坐标Y*/
+// @ifNotDefined public native DzGetMouseY () returns int
+// /**获取鼠标在游戏控件坐标X*/
+// @ifNotDefined public native DzGetMouseXRelative () returns int
+// /**获取鼠标在游戏控件坐标Y*/
+// @ifNotDefined public native DzGetMouseYRelative () returns int
+// /**设置鼠标的坐标*/
+// @ifNotDefined public native DzSetMousePos (int x, int y)
+// /**触发注册鼠标点击事件（sync为true时，调用TriggerExecute。为false时，直接运行action函数，可以异步不掉线，action里不要有同步操作）*/
+// @ifNotDefined public native DzTriggerRegisterMouseEvent (trigger trig, int btn, int status, bool sync, string func)
+// /**通过code注册鼠标点击事件（sync为true时，调用TriggerExecute。为false时，直接运行action函数，可以异步不掉线，action里不要有同步操作）*/
+// @ifNotDefined public native DzTriggerRegisterMouseEventByCode (trigger trig, int btn, int status, bool sync, code funcHandle)
+// /**触发注册键盘点击事件*/
+// @ifNotDefined public native DzTriggerRegisterKeyEvent (trigger trig, int key, int status, bool sync, string func)
+// /**通过code注册按键事件*/
+// @ifNotDefined public native DzTriggerRegisterKeyEventByCode (trigger trig, int key, int status, bool sync, code funcHandle)
+// /**触发注册鼠标滚轮事件*/
+// @ifNotDefined public native DzTriggerRegisterMouseWheelEvent (trigger trig, bool sync, string func)
+// /**通过code注册鼠标滚轮事件*/
+// @ifNotDefined public native DzTriggerRegisterMouseWheelEventByCode (trigger trig, bool sync, code funcHandle)
+// /**注册鼠标移动事件*/
+// @ifNotDefined public native DzTriggerRegisterMouseMoveEvent (trigger trig, bool sync, string func)
+// /**通过code注册鼠标移动事件*/
+// @ifNotDefined public native DzTriggerRegisterMouseMoveEventByCode (trigger trig, bool sync, code funcHandle)
+// /**获取触发器的按键码*/
+// @ifNotDefined public native DzGetTriggerKey () returns int
+// /**获取滚轮delta*/
+// @ifNotDefined public native DzGetWheelDelta () returns int
+// /**判断按键是否按下*/
+// @ifNotDefined public native DzIsKeyDown (int iKey) returns bool
+// /**获取触发key的玩家*/
+// @ifNotDefined public native DzGetTriggerKeyPlayer () returns player
+// /**获取war3控件宽度*/
+// @ifNotDefined public native DzGetWindowWidth () returns int
+// /**获取war3控件高度*/
+// @ifNotDefined public native DzGetWindowHeight () returns int
+// /**获取war3控件X坐标*/
+// @ifNotDefined public native DzGetWindowX () returns int
+// /**获取war3控件Y坐标*/
+// @ifNotDefined public native DzGetWindowY () returns int
+// /**注册war3控件大小变化事件*/
+// @ifNotDefined public native DzTriggerRegisterWindowResizeEvent (trigger trig, bool sync, string func)
+// /**通过code注册war3控件大小变化事件*/
+// @ifNotDefined public native DzTriggerRegisterWindowResizeEventByCode (trigger trig, bool sync, code funcHandle)
+// /**判断控件是否激活*/
+// @ifNotDefined public native DzIsWindowActive () returns bool
+
+// // plus
+// /**设置可摧毁物位置*/
+// @ifNotDefined public native DzDestructablePosition (destructable d, real x, real y)
+// /**设置单位位置-本地调用*/
+// @ifNotDefined public native DzSetUnitPosition (unit whichUnit, real x, real y)
+// /**异步执行函数*/
+// @ifNotDefined public native DzExecuteFunc (string funcName)
+// /**获取鼠标指向的单位*/
+// @ifNotDefined public native DzGetUnitUnderMouse () returns unit
+// /**设置单位的贴图*/
+// @ifNotDefined public native DzSetUnitTexture (unit whichUnit, string path, int texId)
+// /**设置内存大小（废物函数）*/
+// @ifNotDefined public native DzSetMemory (int address, real value)
+// /**替换单位类型 [BZAPI]*/
+// @ifNotDefined public native DzSetUnitID (unit whichUnit, int id)
+// /**替换单位模型 [BZAPI]*/
+// @ifNotDefined public native DzSetUnitModel (unit whichUnit, string path)
+// /**原生 - 设置小地图背景贴图*/
+// @ifNotDefined public native DzSetWar3MapMap (string map)
+// /**获取语言环境*/
+// @ifNotDefined public native DzGetLocale () returns string
+// /**获取单位需要的xp*/
+// @ifNotDefined public native DzGetUnitNeededXP (unit whichUnit, int level) returns int
+
+// // sync
+// /**注册数据同步触发器*/
+// @ifNotDefined public native DzTriggerRegisterSyncData (trigger trig, string prefix, bool server)
+// /**同步游戏数据*/
+// @ifNotDefined public native DzSyncData (string prefix, string data)
+// /**获取同步的数据*/
+// @ifNotDefined public native DzGetTriggerSyncData () returns string
+// /**获取同步数据的玩家*/
+// @ifNotDefined public native DzGetTriggerSyncPlayer () returns player
+
+// // GUI
+// /**隐藏界面元素*/
+// @ifNotDefined public native DzFrameHideInterface ()
+// /**修改游戏世界控件位置*/
+// @ifNotDefined public native DzFrameEditBlackBorders (real upperHeight, real bottomHeight)
+// /**获取头像*/
+// @ifNotDefined public native DzFrameGetPortrait () returns int
+// /**获取小地图*/
+// @ifNotDefined public native DzFrameGetMinimap () returns int
+// /**获取技能按钮*/
+// @ifNotDefined public native DzFrameGetCommandBarButton (int row, int column) returns int
+// /**获取英雄按钮*/
+// @ifNotDefined public native DzFrameGetHeroBarButton (int buttonId) returns int
+// /**获取英雄血条*/
+// @ifNotDefined public native DzFrameGetHeroHPBar (int buttonId) returns int
+// /**获取英雄蓝条*/
+// @ifNotDefined public native DzFrameGetHeroManaBar (int buttonId) returns int
+// /**获取物品栏按钮*/
+// @ifNotDefined public native DzFrameGetItemBarButton (int buttonId) returns int
+// /**获取小地图按钮*/
+// @ifNotDefined public native DzFrameGetMinimapButton (int buttonId) returns int
+// /**获取上方菜单按钮*/
+// @ifNotDefined public native DzFrameGetUpperButtonBarButton (int buttonId) returns int
+// /**获取鼠标提示*/
+// @ifNotDefined public native DzFrameGetTooltip () returns int
+// /**获取聊天信息*/
+// @ifNotDefined public native DzFrameGetChatMessage () returns int
+// /**获取单位信息*/
+// @ifNotDefined public native DzFrameGetUnitMessage () returns int
+// /**获取顶置的信息*/
+// @ifNotDefined public native DzFrameGetTopMessage () returns int
+// /**获取RGBA颜色值*/
+// @ifNotDefined public native DzGetColor (int r, int g, int b, int a) returns int
+// /**设置界面更新回调（非同步）*/
+// @ifNotDefined public native DzFrameSetUpdateCallback (string func)
+// /**界面更新回调*/
+// @ifNotDefined public native DzFrameSetUpdateCallbackByCode (code funcHandle)
+// /**显示/隐藏控件*/
+// @ifNotDefined public native DzFrameShow (int frame, bool enable)
+// /**创建控件*/
+// @ifNotDefined public native DzCreateFrame (string frame, int parent, int id) returns int
+// /**创建简单的控件*/
+// @ifNotDefined public native DzCreateSimpleFrame (string frame, int parent, int id) returns int
+// /**销毁控件*/
+// @ifNotDefined public native DzDestroyFrame (int frame)
+// /**加载Toc文件*/
+// @ifNotDefined public native DzLoadToc (string fileName)
+// /**设置控件相对位置 [0:左上|1:上|2:右上|3:左|4:中|5:右|6:左下|7:下|8:右下]*/
+// @ifNotDefined public native DzFrameSetPoint (int frame, int point, int relativeFrame, int relativePoint, real x, real y)
+// /**设置控件绝对位置*/
+// @ifNotDefined public native DzFrameSetAbsolutePoint (int frame, int point, real x, real y)
+// /**清空控件锚点*/
+// @ifNotDefined public native DzFrameClearAllPoints (int frame)
+// /**设置控件禁用/启用*/
+// @ifNotDefined public native DzFrameSetEnable (int name, bool enable)
+// /**设置窗体禁用/启用*/
+// @ifNotDefined public native DzFrameSetScript (int frame, int eventId, string func, bool sync)
+// /**注册UI事件回调(func handle)*/
+// @ifNotDefined public native DzFrameSetScriptByCode (int frame, int eventId, code funcHandle, bool sync)
+// /**获取触发用户界面事件的玩家*/
+// @ifNotDefined public native DzGetTriggerUIEventPlayer () returns player
+// /**获取触发用户界面事件的控件*/
+// @ifNotDefined public native DzGetTriggerUIEventFrame () returns int
+// /**通过名称查找控件*/
+// @ifNotDefined public native DzFrameFindByName (string name, int id) returns int
+// /**通过名称查找普通控件*/
+// @ifNotDefined public native DzSimpleFrameFindByName (string name, int id) returns int
+// /**通过名字查找字体字符串*/
+// @ifNotDefined public native DzSimpleFontStringFindByName (string name, int id) returns int
+// /**通过名字查找BACKDROP frame*/
+// @ifNotDefined public native DzSimpleTextureFindByName (string name, int id) returns int
+// /**获取游戏用户界面*/
+// @ifNotDefined public native DzGetGameUI () returns int
+// /**点击控件*/
+// @ifNotDefined public native DzClickFrame (int frame)
+// /**自定义屏幕Fov比例*/
+// @ifNotDefined public native DzSetCustomFovFix (real value)
+// /**使用宽屏模式*/
+// @ifNotDefined public native DzEnableWideScreen (bool enable)
+// /**设置文字（支持EditBox, TextFrame, TextArea, SimpleFontString、GlueEditBoxWar3、SlashChatBox、TimerTextFrame、TextButtonFrame、GlueTextButton）*/
+// @ifNotDefined public native DzFrameSetText (int frame, string text)
+// /**获取文字（支持EditBox, TextFrame, TextArea, SimpleFontString）*/
+// @ifNotDefined public native DzFrameGetText (int frame) returns string
+// /**设置字数限制（支持EditBox）*/
+// @ifNotDefined public native DzFrameSetTextSizeLimit (int frame, int size)
+// /**获取字数限制（支持EditBox）*/
+// @ifNotDefined public native DzFrameGetTextSizeLimit (int frame) returns int
+// /**设置文字颜色（支持TextFrame, EditBox）*/
+// @ifNotDefined public native DzFrameSetTextColor (int frame, int color)
+// /**获取鼠标所在位置的用户界面控件(伪全屏获取不到，设置改建后获取不到，移动快了获取不到手动点才刷新，不好用的话用坐标判断)*/
+// @ifNotDefined public native DzGetMouseFocus () returns int
+// /**设置所有锚点到目标控件上*/
+// @ifNotDefined public native DzFrameSetAllPoints (int frame, int relativeFrame) returns bool
+// /**设置焦点*/
+// @ifNotDefined public native DzFrameSetFocus (int frame, bool enable) returns bool
+// /**设置模型（支持Sprite、Model、StatusBar）*/
+// @ifNotDefined public native DzFrameSetModel (int frame, string modelFile, int modelType, int flag)
+// /**获取控件是否启用*/
+// @ifNotDefined public native DzFrameGetEnable (int frame) returns bool
+// /**设置控件透明度（0-255）*/
+// @ifNotDefined public native DzFrameSetAlpha (int frame, int alpha)
+// /**获取控件透明度（0-255）*/
+// @ifNotDefined public native DzFrameGetAlpha (int frame) returns int
+// /**设置控件动画*/
+// @ifNotDefined public native DzFrameSetAnimate (int frame, int animId, bool autocast)
+// /**设置控件动画进度（autocast为false是可用）*/
+// @ifNotDefined public native DzFrameSetAnimateOffset (int frame, real offset)
+// /**设置控件texture（支持Backdrop、SimpleStatusBar）*/
+// @ifNotDefined public native DzFrameSetTexture (int frame, string texture, int flag)
+// /**设置控件缩放*/
+// @ifNotDefined public native DzFrameSetScale (int frame, real scale)
+// /**设置控件提示*/
+// @ifNotDefined public native DzFrameSetTooltip (int frame, int tooltip)
+// /**鼠标限制在控件内*/
+// @ifNotDefined public native DzFrameCageMouse (int frame, bool enable)
+// /**获取控件当前值（支持Slider、SimpleStatusBar、StatusBar）*/
+// @ifNotDefined public native DzFrameGetValue (int frame) returns real
+// /**设置控件最大最小值（支持Slider、SimpleStatusBar、StatusBar）*/
+// @ifNotDefined public native DzFrameSetMinMaxValue (int frame, real minValue, real maxValue)
+// /**设置控件Step值（支持Slider）*/
+// @ifNotDefined public native DzFrameSetStepValue (int frame, real val)
+// /**设置控件当前值（支持Slider、SimpleStatusBar、StatusBar）*/
+// @ifNotDefined public native DzFrameSetValue (int frame, real value)
+// /**设置控件大小*/
+// @ifNotDefined public native DzFrameSetSize (int frame, real w, real h)
+// /**根据tag创建控件*/
+// @ifNotDefined public native DzCreateFrameByTagName (string frameType, string name, int parent, string template, int id) returns int
+// /**设置控件颜色（支持SimpleStatusBar）*/
+// @ifNotDefined public native DzFrameSetVertexColor (int frame, int color)
+// /**原生界面控件自动复位*/
+// @ifNotDefined public native DzOriginalUIAutoResetPoint (bool enable)
+// /**设置控件优先级 [NEW]*/
+// @ifNotDefined public native DzFrameSetPriority (int frame, int priority)
+// /**设置控件父控件 [NEW]*/
+// @ifNotDefined public native DzFrameSetParent (int frame, int parent)
+// /** 获取控件的高度 [NEW]*/
+// @ifNotDefined public native DzFrameGetHeight (int frame) returns real
+// /**设置控件字体 [NEW]*/
+// @ifNotDefined public native DzFrameSetFont (int frame, string fileName, real height, int flag)
+// /**获取控件的父控件 [NEW]*/
+// @ifNotDefined public native DzFrameGetParent (int frame) returns int
+// /**设置文本控件的对齐方式 [NEW]*/
+// @ifNotDefined public native DzFrameSetTextAlignment (int frame, int align)
+// /**获取控件名字*/
+// @ifNotDefined public native DzFrameGetName (int frame) returns string
+// /**注册鼠标点击事件（sync为true时，调用TriggerExecute。为false时，直接运行action函数，可以异步不掉线，action里不要有同步操作）*/
+// @ifNotDefined public function DzTriggerRegisterMouseEventTrg ( trigger trg, integer status, integer btn ) 
+//     if trg == null 
+//         return
+    
+//     DzTriggerRegisterMouseEvent(trg, btn, status, true, "")
+
+// /**注册键盘点击事件*/
+// @ifNotDefined public function DzTriggerRegisterKeyEventTrg ( trigger trg, integer status, integer btn ) 
+//     if trg == null 
+//         return
+    
+//     DzTriggerRegisterKeyEvent(trg, btn, status, true, null)
+
+// /**注册鼠标移动事件*/
+// @ifNotDefined public function DzTriggerRegisterMouseMoveEventTrg ( trigger trg ) 
+//     if trg == null 
+//         return
+    
+//     DzTriggerRegisterMouseMoveEvent(trg, true, null)
+
+// /**注册鼠标滚轮事件*/
+// @ifNotDefined public function DzTriggerRegisterMouseWheelEventTrg ( trigger trg ) 
+//     if trg == null 
+//         return
+    
+//     DzTriggerRegisterMouseWheelEvent(trg, true, null)
+
+// /**注册war3窗口大小变化事件*/
+// @ifNotDefined public function DzTriggerRegisterWindowResizeEventTrg ( trigger trg ) 
+//     if trg == null 
+//         return
+    
+//     DzTriggerRegisterWindowResizeEvent(trg, true, null)
+
+// /**转换控件为整数*/
+// @ifNotDefined public function DzF2I ( integer i ) returns integer
+//     return i
+
+// /**转换整数为控件*/
+// @ifNotDefined public function DzI2F ( integer i ) returns integer
+//     return i
+
+// /**转换按键为整数*/
+// @ifNotDefined public function DzK2I ( integer i ) returns integer
+//     return i
+
+// /**转换整数为按键*/
+// @ifNotDefined public function DzI2K ( integer i ) returns integer
+//     return i
+
+// /**注册数据同步触发器*/
+// @ifNotDefined public function DzTriggerRegisterMallItemSyncData ( trigger trig ) 
+//     DzTriggerRegisterSyncData(trig, "DZMIA", true)
+
+// /**获取同步数据的玩家*/
+// @ifNotDefined public function DzGetTriggerMallItemPlayer (  ) returns player
+//     return DzGetTriggerSyncPlayer()
+
+// /**获取同步的数据*/
+// @ifNotDefined public function DzGetTriggerMallItem (  ) returns string
+//     return DzGetTriggerSyncData()
+

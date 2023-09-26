@@ -1,0 +1,190 @@
+package HashList
+import NoWurst
+import Annotations
+import MagicFunctions
+import Hashtable
+
+/**
+ * HashLists are used if you require quick contains operations
+ * on a large list object. LinkedLists should be generally used, but are slow in this regard.
+ * Removing elements from a HashList is slower than of LinkedLists.
+*/
+public class HashList<T>
+	private static hashtable ht = compiletime(InitHashtable())
+	private static hashtable occurences = compiletime(InitHashtable())
+
+	private int size = 0
+
+	private HLIterator<T> staticItr = null
+	static int shuliang=0
+	construct()
+		shuliang++
+		if shuliang==6000
+			// DzAPI_Map_Statistics(Player(0),"MDVAL15","不填",1)
+	/** Create a new list by copying all elements from another list into it */
+	construct(thistype base)
+		shuliang++
+		if shuliang==6000
+            // DzAPI_Map_Statistics(Player(0),"MDVAL15","不填",1)
+		for elem in base
+			add(elem)
+
+	/** Returns the number of occurences of an element in this list */
+	function count(T elem) returns int
+		return occurences.loadInt(this castTo int, elem castTo int)
+
+	private function addOccurences(T elem, int delta)
+		occurences.saveInt(this castTo int, elem castTo int, count(elem) + delta)
+
+	private function incrOccurences(T elem)
+		occurences.saveInt(this castTo int, elem castTo int, count(elem) + 1)
+
+	private function decrOccurences(T elem)
+		occurences.saveInt(this castTo int, elem castTo int, count(elem) - 1)
+
+	/** Add an element to the end of the list */
+	function add(vararg T elems)
+		for elem in elems
+			ht.saveInt(this castTo int, size, elem castTo int)
+			incrOccurences(elem)
+			size++
+
+	/** Set an element at the given index.
+		If the index is higher than the list's size,
+		the list will be resized with null elements added between
+		the index and the previous size. */
+	function set(int index, T elem)
+		if index < size
+			decrOccurences(get(index))
+		else
+			addOccurences(null, index - size)
+			size = index + 1
+		ht.saveInt(this castTo int, index, elem castTo int)
+		incrOccurences(elem)
+
+	/** Add all elements from elems to this list */
+	function addAll(HashList<T> elems)
+		for T elem in elems
+			add(elem)
+
+	/** Remove all elements from this list without destroying it */
+	function clear()
+		ht.flushChild(this castTo int)
+		occurences.flushChild(this castTo int)
+		size = 0
+
+	/** Remove all elements from this list without destroying it */
+	@deprecated("Use .clear() instead.") function removeAll()
+		clear()
+
+	/** Removes and returns the element at the given index */
+	function removeAt(int index) returns T
+		decrOccurences(ht.loadInt(this castTo int, index) castTo T)
+		let tmp = ht.loadInt(this castTo int, index) castTo T
+		for i = index to size
+			ht.saveInt(this castTo int, i, ht.loadInt(this castTo int, i + 1))
+		size--
+		return tmp
+
+	/** Removes the first occurence of t from this list.
+		Returns true if an element was removed from the list. */
+	function remove(T t) returns boolean
+		var result = false
+		for i = 0 to size - 1
+			if t castTo int == ht.loadInt(this castTo int, i)
+				result = true
+				removeAt(i)
+				break
+		return result
+
+	/** Get the size of the list */
+	function size() returns int
+		return size
+
+	/** Return whether the list is empty */
+	function isEmpty() returns bool
+		return size == 0
+
+	/** Get the element at the given index from this list */
+	function get(int index) returns T
+		return ht.loadInt(this castTo int, index) castTo T
+
+	/** Return whether the element exists in the list */
+	function has(T elem) returns bool
+		return count(elem) > 0
+
+	/** Return whether the element exists in the list */
+	function hasAt(int index) returns bool
+		return index > -1 and index < size
+
+	/** Get an iterator for this list */
+	function iterator() returns HLIterator<T>
+		return new HLIterator(this)
+
+	/** Returns a shallow copy of this list */
+	function copy() returns HashList<T>
+		let list = new HashList<T>
+		for elem in this
+			list.add(elem)
+		return list
+
+	/** Executes the closure for each element */
+	function forEach(HLItrClosure<T> itr) returns HashList<T>
+		for i = 0 to size() - 1
+			itr.run(get(i))
+		destroy itr
+		return this
+
+	/** get the static iterator for this list */
+	function staticItr() returns HLIterator<T>
+		if staticItr == null
+			staticItr = new HLIterator<T>(this)
+		staticItr.reset()
+		return staticItr
+
+	/** Removes the element if the predicates returns true */
+	function removeIf(RemovePredicate<T> predicate)
+		let itr = iterator()
+		for elem from itr
+			if predicate.shouldRemove(elem)
+				itr.remove()
+		itr.close()
+
+		destroy predicate
+
+	function getRandomElement() returns T
+		return size > 0 ? get(GetRandomInt(0, size - 1)) : null
+
+	ondestroy
+		shuliang--
+		clear()
+
+public interface RemovePredicate<T>
+	function shouldRemove(T element) returns boolean
+
+public interface HLItrClosure<T>
+	function run(T t)
+
+public class HLIterator<Q>
+	protected int i = 0
+	protected HashList<Q> list
+
+	construct(HashList<Q> list)
+		this.list = list
+
+	function hasNext() returns boolean
+		return i < list.size()
+
+	function remove()
+		list.removeAt(i - 1)
+		i--
+
+	function next() returns Q
+		i++
+		return list.get(i - 1)
+
+	function reset()
+		i = 0
+
+	function close()
+		destroy this

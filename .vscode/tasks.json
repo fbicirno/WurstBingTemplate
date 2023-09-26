@@ -1,0 +1,47 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "编译并运行",
+            "type": "shell",
+            "command": "${workspaceFolder}\\.vscode\\runmap.bat",
+            "options": {
+                "cwd": "${workspaceFolder}\\_build"
+            },
+            "args": [
+                "${workspaceFolder}",
+                "run"
+            ],
+            "group": "test",
+            "dependsOn": [
+                "编译"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "编译",
+            "type": "shell",
+            "dependsOn":"删除地图jass",
+            "command": "echo ${input:build}"
+        },
+        {
+            "label": "删除地图jass",
+            "type": "shell",
+            "command": "${workspaceFolder}\\.vscode\\deljass.bat",
+            "options": {
+                "statusbar": {
+                  "hide" : true
+                }
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "build",
+            "type": "command",
+            "command": "wurst.buildmap",
+        }
+    ]
+}

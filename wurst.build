@@ -1,0 +1,8 @@
+---
+projectName: WS冰冰作图框架
+dependencies:
+- https://github.com/taoria/WurstStdlib2
+buildMapData:
+  name: WS冰冰作图框架
+  fileName: buildmap
+  author: 冰冰RPG

@@ -1,0 +1,43 @@
+package apiConst_Test
+import Assets
+import FramehandleNames
+import Orders
+import Tiles
+import UnitAnimations
+
+/*
+API——常量集合
+预览依赖库提供的常量，一般存在_wurst文件夹
+
+NOTE
+导入包Assets就全有了
+*/
+
+@test function expApiConst()
+    print("字符串——技能特效模型——路径"+Abilities.aIamTarget)
+    print("字符串——建筑模型——路径"+Buildings.altarOfDarkness)
+    print("字符串——单位模型——路径"+Units.abomination1)
+    print("字符串——装饰物模型——路径"+Doodads.aRockArch)
+    print("字符串——UI——控件类型"+FramehandleTypeNames.backdrop)
+    print("字符串——UI——原生控件名字"+FramehandleDefaultNames.allianceAcceptButton)
+    print("字符串——UI——原生控件模板"+FramehandleNames.adBanner)
+    print("字符串——图标——路径"+Icons.bTN3M1)
+    print("字符串——特殊模型——路径"+Objects.battleStandard)
+    print("字符串——音乐音效——路径"+Sounds.a01Garithos01)
+    print("字符串——音乐名——预设"+Soundsets.abomination)
+    print("字符串——图标——路径"+Textures._SelectionA)
+    print("字符串——UI——模型路径"+UI.alliance_Exp)
+    print("字符串——单位附加点"+AttachmentPoints.chest)
+
+    print("整数id——技能——原版"+AbilityIds.aOEdamageupondeath.toString())
+    print("整数id——物品——原版"+ItemIds.alleriasFluteofAccuracy.toString())
+    print("整数id——单位——原版"+UnitIds.abomination.toString())
+    print("整数id——buff技能——原版"+BuffIds.acidBomb.toString())
+    print("整数id——特殊命令ID——原版"+SpecialOrders.buildmenu.toString())
+    print("整数id——命令ID——原版"+Orders.absorb.toString())
+    print("整数id——天气ID——原版"+WeatherEffects.ashenvaleRainHeavy.toString())
+    print("整数id——瓷砖id——原版"+Tiles.lordaeron_Summer_Rough_Dirt.toString())
+
+    print("动画Data——单位动画——序号/周期时间"+UnitAnimations.AIAgility.birth.idx.toString())
+
+

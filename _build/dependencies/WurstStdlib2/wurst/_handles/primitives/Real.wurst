@@ -1,0 +1,98 @@
+package Real
+import NoWurst
+
+public constant REAL_MAX = 340282366920938000000000000000000000000.
+public constant REAL_MIN = -340282366920938000000000000000000000000.
+public tuple present(real pre)
+public function present.op_plus(present other) returns present
+	return present(this.pre+other.pre)
+
+/**	返回实数的绝对值 */
+public function real.abs() returns real
+	return this < 0 ? -this : this
+
+/** 返回实数的平方值 */
+public function real.squared() returns real
+	return this * this
+
+/** 数学符号函数，返回-1/0/1 */
+public function real.sign() returns int
+	return (this > 0 ? 1 : (this < 0 ? -1 : 0))
+
+/** 返回实数四舍五入后的整数值 */
+public function real.round() returns int
+	return this > 0 ? (this + .5).toInt() : (this - .5).toInt()
+
+/** 返回实数向零舍入后的整数值 */
+public function real.trunc() returns int
+	return this.toInt()
+
+/** 返回实数向下取整后的整数值 */
+public function real.floor() returns int
+	var r = this.toInt()
+	if this < 0 and this - r != 0.
+		r -= 1
+	return r
+
+/** 返回实数向上取整后的整数值 */
+public function real.ceil() returns int
+	var r = this.toInt()
+	if this > 0 and this - r != 0.
+		r += 1
+	return r
+
+/** 限制实数的取值范围 */
+public function real.clamp(real lowerBound, real higherBound) returns real
+	return (this <= lowerBound ? lowerBound : (this >= higherBound ? higherBound : this))
+
+/** 将输入实数转换为整数，并忽略小数位数.(1.9 -> 1) */
+public function real.toInt() returns int
+	return R2I(this)
+
+/** 转换实数为字符串 */
+public function real.toString() returns string
+	return R2S(this)
+
+/** 将输入的实数保留小数后，返回字符串 */
+public function real.toString(int precision) returns string
+	return R2SW(this, precision, precision)
+
+/** 反余弦函数 */
+public function real.acos() returns real
+	return Acos(this)
+
+/** 反正弦函数 */
+public function real.asin() returns real
+	return Asin(this)
+
+/** 反正切函数 */
+public function real.atan() returns real
+	return Atan(this)
+
+/** 余弦函数 */
+public function real.cos() returns real
+	return Cos(this)
+
+/** 正弦函数 */
+public function real.sin() returns real
+	return Sin(this)
+
+/** 正切函数 */
+public function real.tan() returns real
+	return Tan(this)
+
+/** 具有两个参数的反正切函数。需要第二个参数来确定合适的参数计算角度的象限 */
+public function real.atan2(real y) returns real
+	return Atan2(y, this)
+
+/** 返回实数的x次幂 */
+public function real.pow(real x) returns real
+	return Pow(this, x)
+
+/** 返回实数的线性插值(平滑度) */
+public function real.lerp(real target, real alpha) returns real
+	return (this * (1.0 - alpha)) + (target * alpha)
+
+/** 检查实数是否在2个实数之间 */
+public function real.isBetween(real low, real high) returns bool
+	return this >= low and this <= high

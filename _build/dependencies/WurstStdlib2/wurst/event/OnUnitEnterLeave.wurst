@@ -1,0 +1,88 @@
+package OnUnitEnterLeave
+import NoWurst
+import Unit
+import Trigger
+import Group
+import Player
+import MagicFunctions
+import AbilityObjEditing
+import RegisterEvents
+import ObjectIdGenerator
+import MapBounds
+import ClosureTimers
+import Annotations
+import Orders
+
+/*为进入和离开地图的单位提供事件API。
+该事件还将为地图上预先放置的单位所触发。
+
+	注意：作为对enter事件的响应而应用于单位的任何移动
+	将再次触发enter事件*/
+
+let eventTrigger = CreateTrigger()
+let preplacedUnits = CreateGroup()
+
+/*嵌套使用的单位堆栈*/
+unit array tempUnits
+var tempUnitsCount = 0
+
+filterfunc filtercb1=Filter(() -> prepareUnit(GetFilterUnit()))
+
+function pushUnit(unit u)
+	tempUnits[tempUnitsCount] = u
+	tempUnitsCount++
+
+function popUnit()
+	tempUnitsCount--
+
+/* @API */
+
+/**获取-进入/离开事件的单位*/
+public function getEnterLeaveUnit() returns unit
+	return tempUnits[tempUnitsCount - 1]
+
+/**增加单位进入地图时的回调(动作)*/
+public function onEnter(filterfunc fcb)
+	eventTrigger.addCondition(fcb)
+
+/**增加单位离开地图时的回调(动作)*/
+public function onLeave(code c)
+	eventTrigger.addAction(c)
+
+/*===内部的===*/
+constant ABILITY_ID = compiletime(ABIL_ID_GEN.next())
+
+function prepareUnit(unit u)
+	u..addAbility(ABILITY_ID)..makeAbilityPermanent(ABILITY_ID, true)
+	pushUnit(u)
+	eventTrigger.evaluate()
+	popUnit()
+
+init
+	//使该技能对玩家不可见
+	for i = 0 to bj_MAX_PLAYER_SLOTS - 1
+		players[i].setAbilityAvailable(ABILITY_ID, false)
+	nullTimer() ->
+		//创建enter事件
+		CreateTrigger()..registerEnterRegion(boundRegion, filtercb1)
+
+		//创建leave事件
+		registerPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_ORDER) ->
+			let leavingUnit = GetTriggerUnit()
+			if leavingUnit.getAbilityLevel(ABILITY_ID) == 0 and GetIssuedOrderId() == Orders.undefend
+				pushUnit(leavingUnit)
+				eventTrigger.execute()
+				popUnit()
+
+		//预置单位进程
+		preplacedUnits.enumUnitsInRect(boundRect)
+		ForGroup(preplacedUnits, () -> prepareUnit(GetEnumUnit()))
+		preplacedUnits..clear()..destr()
+
+@compiletime function generateAbility()
+	new AbilityDefinitionDefend(ABILITY_ID)
+		..setName("Leave Detect")
+		..setEditorSuffix("(OnUnitEnterLeave)")
+		..setArtCaster("")
+		..setIconNormal("")
+		..setRace(Race.Unknown)

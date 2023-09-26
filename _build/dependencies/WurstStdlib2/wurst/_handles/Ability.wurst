@@ -1,0 +1,277 @@
+package Ability
+import NoWurst
+import Player
+
+import Basics
+import Unit
+import YD_native
+import YD_LuaEngine
+
+let dummy = CreateUnit(DUMMY_PLAYER, 'nshe', 0, 0, 0)..hide()
+
+function createAbility(int abilCode) returns ability
+	dummy.addAbility(abilCode)
+	let result = EXGetUnitAbility(dummy, abilCode)
+	dummy.removeAbility(abilCode)
+	return result
+/** 设置-文本-名字[月光] */
+public function setAbilityName(int abilCode, string name, int level)
+	EXSetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_NAME, name)
+
+/** 设置-等级-文本-提示工具-普通 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function setAbilityTooltip(int abilCode, string tooltip, int level)
+	EXSetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_TIP, tooltip)
+
+/** 设置-等级-文本-提示工具-关闭 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function setAbilityActivatedTooltip(int abilCode, string tooltip, int level)
+	EXSetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_UNTIP, tooltip)
+
+/** 设置-等级-文本-提示工具-普通-拓展Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function setAbilityExtendedTooltip(int abilCode, string tooltip, int level)
+	EXSetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_UBERTIP, tooltip)
+
+/** 设置-等级-文本-提示工具-关闭-拓展Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function setAbilityActivatedExtendedTooltip(int abilCode, string tooltip, int level)
+	EXSetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_UNUBERTIP, tooltip)
+
+/** 设置-文本-提示工具-学习Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function setAbilityResearchTooltip(int abilCode, string tooltip, int level)
+	EXSetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_RESEARCH_TIP, tooltip)
+
+/** 设置-文本-提示工具-学习-拓展Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function setAbilityResearchExtendedTooltip(int abilCode, string tooltip, int level)
+	EXSetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_RESEARCH_UBERTIP, tooltip)
+/**设置-显示-图标-关闭*/
+public function setAbilityActivatedIcon(int abilCode, string iconPath)
+	EXSetAbilityDataString(createAbility(abilCode), 1, ABILITY_DATA_UNART, iconPath)
+/**设置-显示-图标-普通*/
+public function setAbilityIcon(int abilCode, string iconPath)
+	EXSetAbilityDataString(createAbility(abilCode), 1, ABILITY_DATA_ART, iconPath)
+/**设置-等级-状态-魔法施放时间间隔(修改的是技能的cd常数)*/
+public function setAbilityCooldown(int abilCode, real val, int level)
+	EXSetAbilityDataReal(createAbility(abilCode), level, ABILITY_DATA_COOL,val)
+/**设置-等级1-状态-魔法施放时间间隔(修改的是技能的cd常数)*/
+public function setAbilityCooldown(int abilCode, real val)
+	EXSetAbilityDataReal(createAbility(abilCode), 1, ABILITY_DATA_COOL,val)
+
+/** 技能ID——设置技能数据整数(JAPI)*/
+public function int.setAbilityInteger (integer level, integer data_type, integer value ) returns boolean
+	return EXSetAbilityDataInteger(createAbility(this), level, data_type, value)
+
+/** 技能ID——设置技能数据实数(JAPI)*/
+public function int.setAbilityReal (integer level, integer data_type, real value ) returns boolean
+	return EXSetAbilityDataReal(createAbility(this), level, data_type, value)
+
+/** 技能ID——设置技能数据字符串(JAPI)*/
+public function int.setAbilityString ( integer level, integer data_type, string value ) returns boolean
+	return EXSetAbilityDataString(createAbility(this), level, data_type, value)
+
+// public function setAbilityPosX(int abilCode, int x)
+// 	BlzSetAbilityPosX(abilCode, x)
+
+// public function setAbilityPosY(int abilCode, int y)
+// 	BlzSetAbilityPosY(abilCode, y)
+
+// public function setAbilityActivatedPosX(int abilCode, int x)
+// 	BlzSetAbilityActivatedPosX(abilCode, x)
+
+// public function setAbilityActivatedPosY(int abilCode, int y)
+// 	BlzSetAbilityActivatedPosY(abilCode, y)
+/** 设置-文本-名字[月光] */
+public function player.setAbilityName(int abilCode, string name, int level)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, level, ABILITY_DATA_NAME, name)
+
+/** 设置-等级-文本-提示工具-普通 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function player.setAbilityTooltip(int abilCode, string tooltip, int level)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, level, ABILITY_DATA_TIP, tooltip)
+
+/** 设置-等级-文本-提示工具-关闭 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function player.setAbilityActivatedTooltip(int abilCode, string tooltip, int level)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, level, ABILITY_DATA_UNTIP, tooltip)
+
+/** 设置-等级-文本-提示工具-普通-拓展 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function player.setAbilityExtendedTooltip(int abilCode, string tooltip, int level)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, level, ABILITY_DATA_UBERTIP, tooltip)
+
+/** 设置-等级-文本-提示工具-关闭-拓展Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function player.setAbilityActivatedExtendedTooltip(int abilCode, string tooltip, int level)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, level, ABILITY_DATA_UNUBERTIP, tooltip)
+
+/** 设置-文本-提示工具-学习Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function player.setAbilityResearchTooltip(int abilCode, string tooltip, int level)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, level, ABILITY_DATA_RESEARCH_TIP, tooltip)
+
+/** 设置-等级-文本-提示工具-关闭-拓展Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function player.setAbilityResearchExtendedTooltip(int abilCode, string tooltip, int level)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, level, ABILITY_DATA_RESEARCH_UBERTIP, tooltip)
+/** 设置-显示-图标-关闭 */
+public function player.setAbilityActivatedIcon(int abilCode, string iconPath)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, 1, ABILITY_DATA_UNART, iconPath)
+/** 设置-显示-图标-普通 */
+public function player.setAbilityIcon(int abilCode, string iconPath)
+	let abil = createAbility(abilCode)
+	if localPlayer == this
+		EXSetAbilityDataString(abil, 1, ABILITY_DATA_ART, iconPath)
+
+// public function player.setAbilityPosX(int abilCode, int x)
+// 	if localPlayer == this
+// 		BlzSetAbilityPosX(abilCode, x)
+
+// public function player.setAbilityPosY(int abilCode, int y)
+// 	if localPlayer == this
+// 		BlzSetAbilityPosY(abilCode, y)
+
+// public function player.setAbilityActivatedPosX(int abilCode, int x)
+// 	if localPlayer == this
+// 		BlzSetAbilityActivatedPosX(abilCode, x)
+
+// public function player.setAbilityActivatedPosY(int abilCode, int y)
+// 	if localPlayer == this
+// 		BlzSetAbilityActivatedPosY(abilCode, y)
+/**获取-文本-名字[月光]*/
+public function getAbilityName(int abilCode, int level) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_NAME)
+
+/** 获取-等级-文本-提示工具-普通 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function getAbilityTooltip(int abilCode, int level) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_TIP)
+
+/** 获取-等级-文本-提示工具-关闭 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function getAbilityActivatedTooltip(int abilCode, int level) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_UNTIP)
+
+/** 获取-等级-文本-提示工具-普通-拓展 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function getAbilityExtendedTooltip(int abilCode, int level) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_UBERTIP)
+
+/** 获取-等级-文本-提示工具-关闭-拓展 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function getAbilityActivatedExtendedTooltip(int abilCode, int level) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_UNUBERTIP)
+
+/** 获取-文本-提示工具-学习 Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function getAbilityResearchTooltip(int abilCode, int level) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_RESEARCH_TIP)
+
+/** 获取-文本-提示工具-学习-拓展Levels are indexed, first level is 0, second is 1 e.t.c. */
+public function getAbilityResearchExtendedTooltip(int abilCode, int level) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), level, ABILITY_DATA_RESEARCH_UBERTIP)
+/**获取-显示-图标-普通*/
+public function getAbilityIcon(int abilCode) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), 1, ABILITY_DATA_ART)
+/**获取-显示-图标-关闭*/
+public function getAbilityActivatedIcon(int abilCode) returns string
+	return EXGetAbilityDataString(createAbility(abilCode), 1, ABILITY_DATA_UNART)
+
+// public function getAbilityPosX(int abilCode) returns int
+// 	return BlzGetAbilityPosX(abilCode)
+
+// public function getAbilityPosY(int abilCode) returns int
+// 	return BlzGetAbilityPosY(abilCode)
+
+// public function getAbilityActivatedPosX(int abilCode) returns int
+// 	return BlzGetAbilityActivatedPosX(abilCode)
+
+// public function getAbilityActivatedPosY(int abilCode) returns int
+// 	return BlzGetAbilityActivatedPosY(abilCode)
+
+/** 获取-等级-状态-魔法消耗 */
+public function getAbilityManaCost(int abilId, int level) returns integer
+	return EXGetAbilityDataInteger(createAbility(abilId), level, ABILITY_DATA_COST)
+/** 获取-等级-状态-魔法施放时间间隔 */
+public function getAbilityCooldown(int abilId, int level) returns real
+	return EXGetAbilityDataReal(createAbility(abilId), level, ABILITY_DATA_COOL)
+
+
+// Ability Level-Array Field Getters
+// public function ability.getField(abilitybooleanlevelarrayfield field, int level, int index) returns bool
+// 	return BlzGetAbilityBooleanLevelArrayField(this, field, level, index)
+
+// public function ability.getField(abilityintegerlevelarrayfield field, int level, int index) returns int
+// 	return BlzGetAbilityIntegerLevelArrayField(this, field, level, index)
+
+// public function ability.getField(abilityreallevelarrayfield field, int level, int index) returns real
+// 	return BlzGetAbilityRealLevelArrayField(this, field, level, index)
+
+// public function ability.getField(abilitystringlevelarrayfield field, int level, int index) returns string
+// 	return BlzGetAbilityStringLevelArrayField(this, field, level, index)
+
+// Ability Field Setters
+// public function ability.setField(abilitybooleanfield field, bool value) returns bool
+// 	return BlzSetAbilityBooleanField(this, field, value)
+
+// public function ability.setField(abilityintegerfield field, int value) returns bool 
+// 	return BlzSetAbilityIntegerField(this, field, value)
+
+// public function ability.setField(abilityrealfield field, real value) returns bool
+// 	return BlzSetAbilityRealField(this, field, value)
+
+// public function ability.setField(abilitystringfield field, string value) returns bool
+// 	return BlzSetAbilityStringField(this, field, value)
+
+// Ability Level-Field Setters
+// public function ability.setField(abilitybooleanlevelfield field, int level, bool value) returns bool
+// 	return BlzSetAbilityBooleanLevelField(this, field, level, value)
+
+// public function ability.setField(abilityintegerlevelfield field, int level, int value) returns bool
+// 	return BlzSetAbilityIntegerLevelField(this, field, level, value)
+
+// public function ability.setField(abilityreallevelfield field, int level, real value) returns bool
+// 	return BlzSetAbilityRealLevelField(this, field, level, value)
+
+// public function ability.setField(abilitystringlevelfield field, int level, string value) returns bool
+// 	return BlzSetAbilityStringLevelField(this, field, level, value)
+
+// Ability Level-Array Field Setters
+// public function ability.setField(abilitybooleanlevelarrayfield field, int level, int index, bool value) returns bool
+// 	return BlzSetAbilityBooleanLevelArrayField(this, field, level, index, value)
+
+// public function ability.setField(abilityintegerlevelarrayfield field, int level, int index, int value) returns bool
+// 	return BlzSetAbilityIntegerLevelArrayField(this, field, level, index, value)
+
+// public function ability.setField(abilityreallevelarrayfield field, int level, int index, real value) returns bool
+// 	return BlzSetAbilityRealLevelArrayField(this, field, level, index, value)
+
+// public function ability.setField(abilitystringlevelarrayfield field, int level, int index, string value) returns bool
+// 	return BlzSetAbilityStringLevelArrayField(this, field, level, index, value)
+
+// Ability Level-Array Field Add
+// public function ability.addField(abilitybooleanlevelarrayfield field, int level, bool value) returns bool
+// 	return BlzAddAbilityBooleanLevelArrayField(this, field, level, value)
+
+// public function ability.addField(abilityintegerlevelarrayfield field, int level, int value) returns bool
+// 	return BlzAddAbilityIntegerLevelArrayField(this, field, level, value)
+
+// public function ability.addField(abilityreallevelarrayfield field, int level, real value) returns bool
+// 	return BlzAddAbilityRealLevelArrayField(this, field, level, value)
+
+// public function ability.addField(abilitystringlevelarrayfield field, int level, string value) returns bool
+// 	return BlzAddAbilityStringLevelArrayField(this, field, level, value)
+
+// Ability Level-Array Field Remove
+// public function ability.removeField(abilitybooleanlevelarrayfield field, int level, bool value) returns bool
+// 	return BlzRemoveAbilityBooleanLevelArrayField(this, field, level, value)
+
+// public function ability.removeField(abilityintegerlevelarrayfield field, int level, int value) returns bool
+// 	return BlzRemoveAbilityIntegerLevelArrayField(this, field, level, value)
+
+// public function ability.removeField(abilityreallevelarrayfield field, int level, real value) returns bool
+// 	return BlzRemoveAbilityRealLevelArrayField(this, field, level, value)
+
+// public function ability.removeField(abilitystringlevelarrayfield field, int level, string value) returns bool
+// 	return BlzRemoveAbilityStringLevelArrayField(this, field, level, value)

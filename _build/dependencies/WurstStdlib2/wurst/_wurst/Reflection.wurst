@@ -1,0 +1,20 @@
+/**
+ 这个包是为调试而设计的。
+ 它可以打印运行时演示文稿中的一些详细信息
+ Wurst的物体。
+ 所有内容都是高度特定于实现的，因此除了显示调试文本之外，不要将这些函数用于任何其他用途.
+*/
+package Reflection
+
+/** returns the maximum type id, can be usd to
+ iterate over all type-ids from 1 to maxTypeId() */
+public native maxTypeId() returns int
+
+/** returns the class name for a given type id */
+public native typeIdToTypeName(int typeId) returns string
+
+/** returns the number of active instances for a typeId */
+public native instanceCount(int typeId) returns int
+
+/** returns the maximum number of instances reached for the given type id */
+public native maxInstanceCount(int typeId) returns int

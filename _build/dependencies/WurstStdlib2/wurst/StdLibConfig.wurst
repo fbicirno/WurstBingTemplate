@@ -1,0 +1,10 @@
+package StdLibConfig
+import NoWurst
+
+// //全局生效——开启伤害系统
+// public bool STD_WURST_DMGSYSTEM=false
+//开启PRINT_DEBUG输出(输出debug-字样)
+public constant STD_WURST_DEBUG=true
+
+//初始化bitset
+public constant STD_WURST_BITSET=false

@@ -1,0 +1,30 @@
+package Boolean
+import NoWurst
+
+/** 转换布尔值为字符串 */
+public function boolean.toString() returns string
+	return this ? "true" : "false"
+
+/** 转换字符串为布尔值 */
+public function string.toBool() returns boolean
+	return this == "1" or this == "true" ? true : false
+
+/** 字符串是否为1或true */
+public function string.isBool() returns bool
+	return this.toBool().toString() == this
+
+/** 转换布尔值为整数 */
+public function boolean.toInt() returns int
+	return this ? 1 : 0
+
+/** 转换整数为布尔值 */
+public function int.toBool() returns boolean
+	return this != 0
+
+/** 两个布尔值异或 */
+public function xor(bool a, bool b) returns boolean
+	return (a or b) and not (a and b)
+
+/** 两个布尔值异或 */
+public function boolean.xor(bool other) returns boolean
+	return xor(this, other)

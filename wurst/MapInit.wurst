@@ -1,0 +1,23 @@
+package MapInit
+import chongfeng
+import ClosureEvents
+/*
+地图初始化
+【框架在群里】
+【Wurst技术交流群】【934023552】
+
+*/
+
+
+init
+    EventListener.add(EVENT_PLAYER_UNIT_ATTACKED) -> 
+        unit u1=EventData.getTriggerUnit()//被攻击的单位
+        unit u2=EventData.getAttackerUnit()//攻击的单位
+        print("无语，"+u2.getName()+"居然打了"+u1.getName())
+        print("只剩下"+u1.getHP().toString()+"血了")
+
+    EventListener.add(EVENT_PLAYER_UNIT_SPELL_CAST) -> 
+        unit u=EventData.getTriggerUnit()
+        let pos=EventData.getSpellTargetPos()
+        if EventData.getSpellAbilityId()=='AHbz'
+            u.chongfeng(pos)

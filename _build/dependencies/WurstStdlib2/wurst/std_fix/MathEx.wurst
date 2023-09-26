@@ -1,0 +1,109 @@
+package MathEx
+import NoWurst
+import Real
+import Integer
+//import ObjectIds
+import Printing
+import Annotations
+import Wurstunit
+import String
+
+/** 转换为字符串位数 比如 2位 1->01 */
+public function int.toChar(int num) returns string
+    var str=this.toString()
+    if str.length()<num
+        var zero=""
+        for i=1 to num-str.length()
+            zero+="0"
+        str=zero+str
+    if str.length()>num
+        str=""
+        for i=1 to num
+            str+="9"
+    return str
+/** 判断整数是否在范围中*/
+public function int.inLimit(int min,int max) returns bool
+    return min<this and max>this
+// /** 取一个范围内的值*/
+// public function int.clamp(int min,int max) returns int
+// 	if min == max
+// 		return this
+// 	else if this<min
+// 		return min
+// 	else if this>max
+// 		return max
+// 	return this
+
+/** 判断real是否在范围中*/
+public function real.inLimit(real min,real max) returns bool
+    return min<this and max>this
+@inline public function getRandomR(real low,real high) returns real
+    return GetRandomReal(low, high)
+//百分比的支持——100.00% 转换为实数是1.00
+
+/** 自动除100*/
+public function present.toReal() returns real
+	return this.pre/100
+public function present.toInt() returns int
+	return this.pre.toInt()
+public function present.toString() returns string
+	return this.pre.toString(1)+"%"
+public function present.random() returns bool
+	if this.pre>0
+		return GetRandomReal(0, 100)<=this.pre
+	else
+		return false
+
+public function real.toPresent() returns present
+	return present(this)
+public function real.toPreReal() returns real
+	return this/100
+
+/** 转字符串不显示小数点*/
+public function real.toStringEx() returns string
+	return this.toInt().toString()
+
+/*
+核心——随机函数扩充
+*/
+public int random_changshu=0
+/**获取【0-100】随机数，精度为小数点1位*/
+public function real.randomBiaoZhun() returns bool
+    var jilv=this
+    jilv=jilv*10+random_changshu
+    return GetRandomInt(0, 1000)<=jilv.toInt()
+public function random(real percent) returns bool
+    return GetRandomReal(0, 100)<=percent
+public function int.randomI() returns bool
+    return GetRandomInt(0, 100)<=this
+/** 百分比经过随机后的结果*/
+public function real.random() returns bool
+    return GetRandomReal(0, 100)<=this
+public function real.next() returns real
+    return GetRandomReal(0, this)
+public function real.nextInt() returns int
+    return GetRandomInt(0, (this - 0.5).toInt())
+public function real.float(real percent) returns real
+    return GetRandomReal(this*(1 - percent),this*(1 + percent))
+public function real.floatVal(real val) returns real
+    return GetRandomReal(this - val,this + val)
+
+// /** 取一个范围内的值*/
+// public function real.clamp(real min,real max) returns real
+// 	if min == max
+// 		return this
+// 	else if this<min
+// 		return min
+// 	else if this>max
+// 		return max
+// 	return this
+/** 计算整数的实数幂**/
+public function int.pow(real i) returns real
+    return this.toReal().pow(i)
+// /** 转换整数id为字符串id**/
+// @deprecated("浪费运算效率，不推荐")
+// public function int.toIdString() returns string
+// 	return toRawCode(this)
+    
+// @Test function test_idstrplus()
+//     print("步兵的id是"+'hfoo'.toIdString())

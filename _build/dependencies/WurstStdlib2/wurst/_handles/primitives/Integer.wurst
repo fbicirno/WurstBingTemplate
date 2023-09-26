@@ -1,0 +1,153 @@
+package Integer
+import NoWurst
+import Real
+// import YD_LuaEngine
+import Table
+// import MagicFunctions
+import Annotations
+import initlater Bitwise
+
+public constant INT_MAX = 2147483647
+public constant INT_MIN = -2147483648
+constant hexs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+constant decs = new Table()
+
+/** 返回整数的绝对值 */
+public function int.abs() returns int
+	return this < 0 ? -this : this
+
+/** 返回整数的平方 */
+public function int.squared() returns int
+	return this * this
+
+/** 数学符号函数，返回-1/0/1 */
+public function int.sign() returns int
+	return (this > 0 ? 1 : (this < 0 ? -1 : 0))
+
+/** 限制整数取值范围 */
+public function int.clamp(int lowerBound, int higherBound) returns int
+	return (this <= lowerBound ? lowerBound : (this >= higherBound ? higherBound : this))
+
+/** 转换整数为实数 */
+public function int.toReal() returns real
+	return this * 1.
+
+/** 转换整数为字符串 */
+public function int.toString() returns string
+	return I2S(this)
+
+/** 转换十进制整数为十六进制字符串 */
+public function int.toHex() returns string
+	var dec = this
+	var hex = ""
+	while dec > 0
+		hex += hexs[dec mod 0x10]
+		dec = dec div 0x10
+	return hex
+
+/** 转换十六进制字符串为十进制整数 */
+public function string.toDec() returns int
+	let hex = StringCase(this, true)
+	var dec = 0
+	for i = StringLength(hex) downto 1
+		dec += decs.loadInt(StringHash(SubString(hex, i - 1, i)))
+	return dec
+
+/** 返回整数的x次幂 */
+public function int.pow(int x) returns int
+	int result = 1
+	for int i=1 to x
+		result *= this
+	return result
+
+/** 返回整数的线性插值(平滑度) */
+public function int.lerp(int target, real alpha) returns int
+	return ((this * (1 - alpha)) + (target * alpha)).round()
+
+/** 检查整数是否在2个整数之间 */
+public function int.isBetween(int low, int high) returns bool
+	return this >= low and this <= high
+
+/** 返回2个整数按位and运算的值 */
+public function int.bitAnd(int other) returns int
+	return this.and32(other)
+	// if compiletime
+	// 	var val = 0
+	// 	var pow = 1
+	// 	for i = 0 to 30
+	// 		let a = this  mod (pow*2) >= pow
+	// 		let b = other mod (pow*2) >= pow
+	// 		if a and b
+	// 			val += pow
+	// 		pow *= 2
+	// 		if pow > this or pow > other
+	// 			break
+	// 	// 2^31
+	// 	let c = this  >= pow
+	// 	let d = other >= pow
+	// 	if c and d
+	// 		val += pow
+	// 	return val
+	// else
+	// 	return this.and32(other)//S2I(runLuaCode(I2S(this) + "&" + I2S(other)))
+
+/** 返回2个整数按位or运算的值 */
+public function int.bitOr(int other) returns int
+	return this.or32(other)
+	// if compiletime
+	// 	var val = 0
+	// 	var pow = 1
+	// 	for i = 0 to 30
+	// 		let a = this  mod (pow*2) >= pow
+	// 		let b = other mod (pow*2) >= pow
+	// 		if a or b
+	// 			val += pow
+	// 		pow *= 2
+	// 		if pow > this and pow > other
+	// 			break
+	// 	// 2^31
+	// 	let c = this  >= pow
+	// 	let d = other >= pow
+	// 	if c or d
+	// 		val += pow
+	// 	return val
+	// else
+	// 	return S2I(runLuaCode(I2S(this) + "|" + I2S(other)))
+
+/** 返回2个整数按位异或运算的值 */
+public function int.bitXor(int other) returns int
+	return this.xor32(other)
+	// if compiletime
+	// 	var val = 0
+	// 	var pow = 1
+	// 	for i = 0 to 30
+	// 		let a = this  mod (pow*2) >= pow
+	// 		let b = other mod (pow*2) >= pow
+	// 		if (a or b) and (a != b)
+	// 			val += pow
+	// 		pow *= 2
+	// 		if pow > this and pow > other
+	// 			break
+	// 	// 2^31
+	// 	let c = this  >= pow
+	// 	let d = other >= pow
+	// 	if (c or d) and (c != d)
+	// 		val += pow
+	// 	return val
+	// else
+	// 	return S2I(runLuaCode(I2S(this) + "~" + I2S(other)))
+
+/** 检查整数是否为奇数 */
+public function int.isOdd() returns boolean
+	return (this div 2 * 2) == this
+
+/** 检查整数是否为偶数 */
+public function int.isEven() returns boolean
+	return not this.isOdd()
+
+@compiletime function initializeTable()
+	for i = 0 to 15
+		decs.saveInt(StringHash(hexs[i]), i)
+	
+init
+	initializeTable()

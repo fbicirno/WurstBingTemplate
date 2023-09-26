@@ -1,0 +1,53 @@
+package ErrorHandling_config
+import NoWurst
+import public Printing
+import public Real
+import public Integer
+import public String
+import public MagicFunctions
+import GameTimer
+import Hashtable
+import ErrorHandling
+import Annotations
+import Player
+import YD_native
+//让基本库的ErrorHandling被重写覆盖
+constant MUTE_ERROR_DURATION = 30
+constant PRIMARY_ERROR_KEY = -1
+constant HT = compiletime(InitHashtable())
+
+/*
+Allows you to suppress error output.
+This is primarily useful when you catch
+an error with try().
+*/
+init
+	suppressErrorMessages = true
+
+@config public function error(string msg)
+	if compiletime
+		compileError("[错误]: " + msg)
+	else
+		if not suppressErrorMessages
+			let hash = msg.getHash()
+			if HT.hasInt(PRIMARY_ERROR_KEY, hash)
+				// Error has been printed before
+				if HT.loadInt(PRIMARY_ERROR_KEY, hash) + MUTE_ERROR_DURATION < currentTime
+					// Time to print the error again
+					Log.error(msg + getStackTraceString())
+					HT.saveInt(PRIMARY_ERROR_KEY, hash, currentTime.toInt())
+					HT.saveBoolean(PRIMARY_ERROR_KEY, hash, false)
+				else if HT.hasBoolean(PRIMARY_ERROR_KEY, hash)
+					if not HT.loadBoolean(PRIMARY_ERROR_KEY, hash)
+						Log.error("【重复的错误】"+msg)
+						HT.saveBoolean(PRIMARY_ERROR_KEY, hash, true)	
+				else
+					Log.error("【重复的错误】"+msg)
+					HT.saveBoolean(PRIMARY_ERROR_KEY, hash, true)	
+			else
+				HT.saveInt(PRIMARY_ERROR_KEY, hash, currentTime.toInt())
+				Log.error("[错误]: " + msg + getStackTraceString())
+		lastError = msg
+		I2S(1 div 0)
+		// print(1/0)
+		

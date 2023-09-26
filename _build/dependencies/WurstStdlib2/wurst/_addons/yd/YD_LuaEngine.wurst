@@ -1,0 +1,91 @@
+package YD_LuaEngine
+import YD_native
+import NoWurst
+import Annotations
+import StdLibConfig
+import Unit
+/*
+YDLUA引擎
+
+*/
+
+public int lua_usenum=0
+@noinline public function runLuaCode(string cod) returns string
+	lua_usenum++
+	if STD_WURST_DEBUG
+		EXExecuteScript("(require'jass.log').info([[【执行LUA代码】"+cod+"]])")
+	return EXExecuteScript(cod)
+
+/** lua-整数handle id 转 字符串 'HA01' -> "HA01" */
+public function int.luaId2Str() returns string
+	return runLuaCode("('>I4'):pack('"+I2S(this)+"')")
+
+/** lua- 字符串id 转整数handle  "HA01" -> 'HA01'*/
+public function string.luaStr2Id() returns int
+	return S2I(runLuaCode("('>I4'):unpack('"+this+"')"))
+
+
+// Ability Field Getters
+/** 获取slk物编-技能的字符串数据 */
+@deprecated public function getAbilityFieldStr(int abilId, string field) returns string
+	return runLuaCode("(require'jass.slk').ability[" + I2S(abilId) + "]." + field)
+/** 获取slk物编-技能的布尔值数据 */
+@deprecated public function getAbilityFieldBool(int abilId, string field) returns bool
+	return runLuaCode("(require'jass.slk').ability[" + I2S(abilId) + "]." + field) == "1"
+/** 获取slk物编-技能的整数数据 */
+@deprecated public function getAbilityFieldInt(int abilId, string field) returns int
+	return S2I(runLuaCode("(require'jass.slk').ability[" + I2S(abilId) + "]." + field))
+/** 获取slk物编-技能的实数数据 */
+@deprecated public function getAbilityFieldReal(int abilId, string field) returns real
+	return S2R(runLuaCode("(require'jass.slk').ability[" + I2S(abilId) + "]." + field))
+
+// Ability Level-Field Getters
+/** 获取x等级的技能字符串数据 */
+@deprecated public function getAbilityFieldStr(int abilId, string field, int level) returns string
+	return getAbilityFieldStr(abilId, field + I2S(level))
+/** 获取x等级的技能布尔值数据 */
+@deprecated public function getAbilityFieldBool(int abilId, string field, int level) returns bool
+	return getAbilityFieldBool(abilId, field + I2S(level))
+/** 获取x等级的技能整数数据 */
+@deprecated public function getAbilityFieldInt(int abilId, string field, int level) returns int
+	return getAbilityFieldInt(abilId, field + I2S(level))
+/** 获取x等级的技能实数数据 */
+@deprecated public function getAbilityFieldReal(int abilId, string field, int level) returns real
+	return getAbilityFieldReal(abilId, field + I2S(level))
+
+/**获取物品字段的字符串值*/
+@deprecated public function item.getFieldStr(string field) returns string	
+	return I2S(GetItemTypeId(this)).luagetProp("item",field)
+/**获取物品字段的布尔值*/
+public function item.getFieldBool(string field) returns bool	
+	return this.getFieldStr(field) == "1"
+/**获取物品字段的整数值*/
+public function item.getFieldInt(string field) returns int	
+	return S2I(this.getFieldStr(field))
+/**获取物品字段的实数值*/
+public function item.getFieldReal(string field) returns real	
+	return S2R(this.getFieldStr(field))
+
+public function int.getItemLuaSlkStr(string field) returns string	
+	return runLuaCode("(require 'jass.slk').item['"+this.luaId2Str()+"']."+field)
+
+//单位字段 Unit fields 
+/**获取单位SLK字段-字符串(辅)*/
+@deprecated public function unit.getFieldStr(string field) returns string
+	return runLuaCode("(require'jass.slk').unit[" + I2S(GetUnitTypeId(this)) + "]." + field)
+/**获取单位SLK字段-布尔值*/
+@deprecated public function unit.getFieldBool(string field) returns bool
+	return this.getFieldStr(field) == "1"
+/**获取单位SLK字段-整数*/
+@deprecated public function unit.getFieldInt(string field) returns int
+	return S2I(this.getFieldStr(field))
+/**获取单位SLK字段-实数*/
+@deprecated public function unit.getFieldReal(string field) returns real
+	return S2R(this.getFieldStr(field))
+public function unit.luaGetMainProp() returns string
+    if this.isType(UNIT_TYPE_HERO)
+        return runLuaCode("(require 'jass.slk').unit['"+this.getTypeId().luaId2Str()+"'].Primary")
+    return null
+/**获取ID属性【类型，属性名】*/
+public function string.luagetProp(string utype,string uprop) returns string
+    return runLuaCode("(require 'jass.slk')."+utype+"['"+this+"']."+uprop)

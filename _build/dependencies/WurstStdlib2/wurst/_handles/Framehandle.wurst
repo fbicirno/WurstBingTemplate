@@ -1,0 +1,541 @@
+package Framehandle
+import NoWurst
+import Player
+import Vectors
+import Colors
+import ErrorHandling
+import Annotations
+
+/*
+	1.27：已经针对部分函数删除添加魔改。
+	删除过时函数，大量非函数重载的函数
+
+	可以在控件定义文件 (*.fdf) 中定义自定义控件。
+	这些文件需要在 toc 文件中列出并使用 loadTOCFile() 加载才能使用。
+	toc 文件 *必须 *在末尾总是有一个空行。
+	默认 .fdf 文件位于：
+		war3.w3mod:ui\framedef\ui\
+		war3.w3mod:ui\framedef\glue\
+
+	定位：
+	所有控件都以 4:3 的比例放置在屏幕上。(0, 0) 是框的左下角，(0.8, 0.6) 是框的右上角。
+	目前，也有例外。 ORIGIN_FRAME_WORLD_FRAME 和 ORIGIN_FRAME_PORTRAIT 放置在整个屏幕上，因此它们可以超出框的边界。
+	此行为也会影响控件的大小。请记住，如果屏幕比例不是 4:3，ORIGIN_FRAME_WORLD_FRAME 和 ORIGIN_FRAME_PORTRAIT 的放置和大小将不会匹配其他控件。
+
+	同步：
+	控件使用默认Handle池 -它不能在本地创建。
+	所有 frameeventtype 都是同步事件。如果玩家按下按钮，相关事件将为所有玩家触发。
+	然而，控件的状态是不同步的；即您可以在本地更改文本、值、位置、可见性或状态。
+
+	*重要提示：*始终在同步环境获取控件Handle，
+	1.32注释————————
+	originframetype 注释：
+		ORIGIN_FRAME_GAME_UI 				    --> 主要父控件
+		ORIGIN_FRAME_WORLD_FRAME 			    --> 游戏显示在此控件上
+		ORIGIN_FRAME_HERO_BAR 				    --> 所有HERO_BUTTONS的父级, 英雄按钮共享相同的可见性.
+		ORIGIN_FRAME_HERO_BUTTON [0 to 6]       --> 画面左侧己方/友方英雄按钮
+			ORIGIN_FRAME_HERO_HP_BAR,			--> 左侧英雄血条
+			ORIGIN_FRAME_HERO_MANA_BAR			--> 左侧英雄蓝条
+			ORIGIN_FRAME_HERO_BUTTON_INDICATOR  --> 英雄有技能点时的发光；当英雄获得新技能点时，即使所有原始控件都被隐藏，它们也会重新出现。
+
+		ORIGIN_FRAME_ITEM_BUTTON [0 to 5]       --> 库存中的物品。即使所有原始控件都被隐藏（当显示父级的父级时），也会重新出现在单位的选择中
+		ORIGIN_FRAME_COMMAND_BUTTON [0 to 11]   --> 命令板的按钮。 0 是 (0,0) 按钮，11 是 (3,2) 按钮。即使所有原始控件都被隐藏，也会重新出现在单位的选择中
+		ORIGIN_FRAME_SYSTEM_BUTTON [0 to 3]     --> 菜单，盟友，消息，任务。
+		ORIGIN_FRAME_PORTRAIT 	                --> 所选单位的动态大头像（此控件不在 4:3 屏幕上，而是在整个屏幕上）
+		ORIGIN_FRAME_MINIMAP					--> 小地图
+		ORIGIN_FRAME_MINIMAP_BUTTON [0 to 4]    --> 小地图按钮，0 是顶部的按钮，4 是底部的按钮。
+		ORIGIN_FRAME_TOOLTIP					-->	
+		ORIGIN_FRAME_UBERTOOLTIP                --> 游戏tooltips控件
+		ORIGIN_FRAME_CHAT_MSG                   --> m玩家聊天信息控件
+		ORIGIN_FRAME_UNIT_MSG                   --> 游戏消息的控件（例如来自 DisplayTextToPlayer()）
+		ORIGIN_FRAME_TOP_MSG					--> 维修费警告消息的控件，位于时钟下方
+		ORIGIN_FRAME_PORTRAIT_HP_TEXT			--> 动态头像下方HP文本
+		ORIGIN_FRAME_PORTRAIT_MANA_TEXT			--> 动态头像下方MP文本
+		ORIGIN_FRAME_UNIT_PANEL_BUFF_BAR		--> 8个buff栏位
+		ORIGIN_FRAME_UNIT_PANEL_BUFF_BAR_LABEL	--> buff左边的状态文本标签
+*/
+public tuple framehandle(int id)
+public tuple frameeventtype(int id)
+public tuple framepointtype(int id)
+public tuple textaligntype(int id)
+
+
+
+public constant GAME_UI  = framehandle(DzGetGameUI())
+// public constant WORLD_UI = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+
+/*设置居中
+    0-左上 2-左中 4-左下 
+    16中上 18-居中 20-中下 
+    32-右上 34-右中 36-右下
+	*/
+public constant TEXT_JUSTIFY_TOP      = textaligntype(16)
+public constant TEXT_JUSTIFY_MIDDLE   = textaligntype(18)
+public constant TEXT_JUSTIFY_BOTTOM   = textaligntype(20)
+public constant TEXT_JUSTIFY_LEFT     = textaligntype(2)
+public constant TEXT_JUSTIFY_CENTER   = textaligntype(18)
+public constant TEXT_JUSTIFY_RIGHT    = textaligntype(34)
+// frame event type
+/** 鼠标点击 */
+public constant FRAMEEVENT_CONTROL_CLICK          = frameeventtype(1)   // 鼠标点击
+/** 鼠标进入 */
+public constant FRAMEEVENT_MOUSE_ENTER            = frameeventtype(2)   // 鼠标进入
+/** 鼠标离开 */
+public constant FRAMEEVENT_MOUSE_LEAVE            = frameeventtype(3)   // 鼠标离开
+/** 鼠标释放 */
+public constant FRAMEEVENT_MOUSE_UP               = frameeventtype(4)   // 鼠标释放
+/** 鼠标弹起(无效) */
+public constant FRAMEEVENT_MOUSE_DOWN             = frameeventtype(5)   // 鼠标弹起(无效)
+/** 鼠标轮滚：+120 -> Forward，-120 -> Backwards*/
+public constant FRAMEEVENT_MOUSE_WHEEL            = frameeventtype(6)   // 鼠标轮滚
+/** 复选框-被选中 */
+public constant FRAMEEVENT_CHECKBOX_CHECKED       = frameeventtype(7)   // 复选框-被选中
+/** 复选框-取消选中 */
+public constant FRAMEEVENT_CHECKBOX_UNCHECKED     = frameeventtype(8)   // 复选框-取消选中
+/** 输入框-改变文本 */
+public constant FRAMEEVENT_EDITBOX_TEXT_CHANGED   = frameeventtype(9)   // 输入框-改变文本
+/** 菜单-被改变 */
+public constant FRAMEEVENT_POPUPMENU_CHANGED      = frameeventtype(10)  // 菜单-被改变
+/** 菜单-项目被改变 */
+public constant FRAMEEVENT_POPUPMENU_ITEM_CHANGED = frameeventtype(11)  // 菜单-项目被改变
+/** 鼠标双击 */
+public constant FRAMEEVENT_MOUSE_DOUBLECLICK      = frameeventtype(12)  // 鼠标双击
+/** 动画更新(无效) */
+public constant FRAMEEVENT_SPRITE_ANIM_UPDATE     = frameeventtype(13)  // 动画更新(无效)
+
+// frame point type
+/** 左上 */
+public constant FA_TOPLEFT     = framepointtype(0)  // 左上
+/** 顶部 */
+public constant FA_TOP         = framepointtype(1)  // 顶部
+/** 右上 */
+public constant FA_TOPRIGHT    = framepointtype(2)  // 右上
+/** 左 */
+public constant FA_LEFT        = framepointtype(3)  // 左侧
+/** 中间 */
+public constant FA_CENTER      = framepointtype(4)  // 中间
+/** 右 */
+public constant FA_RIGHT       = framepointtype(5)  // 右侧
+/** 左下 */
+public constant FA_BOTTOMLEFT  = framepointtype(6)  // 左下
+/** 下 */
+public constant FA_BOTTOM      = framepointtype(7)  // 底部
+/** 右下 */
+public constant FA_BOTTOMRIGHT = framepointtype(8)  // 右下
+
+/**屏幕中心*/
+public constant SCREEN_CENTER             = vec2(0.4, 0.3)
+/**屏幕右上角*/
+public constant SCREEN_TOPRIGHT           = vec2(0.8, 0.6)
+/**屏幕左上角*/
+public constant SCREEN_TOPLEFT            = vec2(0.0, 0.6)
+/**屏幕右下角*/
+public constant SCREEN_BOTTOMRIGHT        = vec2(0.8, 0.0)
+/**屏幕左下角*/
+public constant SCREEN_BOTTOMLEFT         = vec2(0.0, 0.0)
+/**屏幕右侧*/
+public constant SCREEN_RIGHT              = vec2(0.8, 0.3)
+/**屏幕左侧*/
+public constant SCREEN_LEFT               = vec2(0.0, 0.3)
+/**屏幕上方*/
+public constant SCREEN_TOP                = vec2(0.4, 0.6)
+/**屏幕下方*/
+public constant SCREEN_BOTTOM             = vec2(0.4, 0.0)
+
+//这些定义表示整个 16：9 屏幕大小。只有"SIMPLE"类型的控件可以移动到此处。
+/**整屏16:9-屏幕右上角*/
+public constant WHOLE_SCREEN_TOPRIGHT     = vec2( 0.95, 0.6)
+/**整屏16:9-屏幕左上角*/
+public constant WHOLE_SCREEN_TOPLEFT      = vec2(-0.15, 0.6)
+/**整屏16:9-屏幕右下角*/
+public constant WHOLE_SCREEN_BOTTOMRIGHT  = vec2( 0.95, 0.0)
+/**整屏16:9-屏幕左下角*/
+public constant WHOLE_SCREEN_BOTTOMLEFT   = vec2(-0.15, 0.0)
+/**整屏16:9-屏幕右侧*/
+public constant WHOLE_SCREEN_RIGHT        = vec2( 0.95, 0.3)
+/**整屏16:9-屏幕左侧*/
+public constant WHOLE_SCREEN_LEFT         = vec2(-0.15, 0.3)
+/**整屏16:9-屏幕上方*/
+public constant WHOLE_SCREEN_TOP          = SCREEN_TOP
+/**整屏16:9-屏幕下方*/
+public constant WHOLE_SCREEN_BOTTOM       = SCREEN_BOTTOM
+
+/**控件最大长度*/
+constant BLZ_FRAMENAME_MAXLENGTH    = 560
+
+/** 返回控件名长度是否有效(是否大于设定最大值) */
+function verifyFrameNameLength(string name) returns boolean
+	if name.length() > BLZ_FRAMENAME_MAXLENGTH
+		error("尝试处理超过最大控件名称长度的控件 (" + BLZ_FRAMENAME_MAXLENGTH.toString() + ") for: " + name)
+		return false
+	return true
+
+/**获取SimpleFrame类型FDF模板的名字(默认ID为0)
+获取名字为${name}的子SimpleFrameID:0
+同名时优先获取最后被创建的。SimpleFrame为fdf中的Frame类型*/
+public function getSimpleFrame(string name) returns framehandle
+	return framehandle(DzSimpleFrameFindByName(name, 0))
+
+/**获取SimpleFrame类型FDF模板的名字(手动填入ID)
+获取名字为${name}的子SimpleFrameID:${Id}
+ID默认填0，同名时优先获取最后被创建的。SimpleFrame为fdf中的Frame类型*/
+public function getSimpleFrame(string name, integer index) returns framehandle
+	return framehandle(DzSimpleFrameFindByName(name, index))
+/**UI——创建SimpleFontString(通过名字查找)*/
+public function getSimpleFontString(string name, integer index) returns framehandle
+	return framehandle(DzSimpleFontStringFindByName(name, index))
+/**UI——创建SimpleTexture(通过名字查找)*/
+public function getSimpleTexture(string name, integer index) returns framehandle
+	return framehandle(DzSimpleTextureFindByName(name, index))
+
+public function getTriggerFrame() returns framehandle
+	return framehandle(DzGetTriggerUIEventFrame())
+
+/**获取Frame类型FDF模板的名字(手动填入ID) 
+获取名字为${name}的子FrameID:${Id}
+ID默认填0，同名时优先获取最后被创建的。非Simple类的Frame类型都用此函数来获取子Frame*/
+public function getFrame(string name, integer createContext) returns framehandle
+	verifyFrameNameLength(name)
+	return framehandle(DzFrameFindByName(name, createContext))
+
+/**	获取Frame类型FDF模板的名字(默认ID为0)
+获取名字为${name}的子Frame
+ID默认填0，同名时优先获取最后被创建的。非Simple类的Frame类型都用此函数来获取子Frame*/
+public function getFrame(string name) returns framehandle
+	verifyFrameNameLength(name)
+	return getFrame(name, 0)
+
+/** 新建Frame类型控件
+FDF模板名字:${frame}
+默认父节点:GAME_UI.id
+默认ID:0
+名字为fdf文件中的名字，ID默认填0。重复创建同名Frame会导致游戏退出时显示崩溃消息，如需避免可以使用Tag创建*/
+public function createFrame(string name) returns framehandle
+	verifyFrameNameLength(name)
+	return framehandle(DzCreateFrame(name, GAME_UI.id, 0))
+
+/** 新建Frame类型控件
+FDF模板名字:${name}
+父节点:${owner}
+ID索引:${createContext}
+名字为fdf文件中的名字，ID默认填0。重复创建同名Frame会导致游戏退出时显示崩溃消息，如需避免可以使用Tag创建*/
+public function createFrame(string name, framehandle owner, integer createContext) returns framehandle
+	verifyFrameNameLength(name)
+	return framehandle(DzCreateFrame(name, owner.id, createContext))
+
+/** 新建SimpleFrame类型控件(T中创建只有Frame和byTag)
+FDF模板名字:${name}
+默认父节点:GAME_UI.id
+默认ID:0 */
+public function createSimpleFrame(string name) returns framehandle	
+	verifyFrameNameLength(name)
+	return framehandle(DzCreateSimpleFrame(name, GAME_UI.id, 0))
+
+/** 新建SimpleFrame类型控件(T中创建只有Frame和byTag)
+FDF模板名字:${name}
+父节点:${owner}
+ID索引:${createContext} */
+public function createSimpleFrame(string name, framehandle owner, integer createContext) returns framehandle
+	verifyFrameNameLength(name)
+	return framehandle(DzCreateSimpleFrame(name, owner.id, createContext))
+
+/** 新建Frame[ByTag]
+创建类型:${typeName}
+名字:${name}
+父节点:${owner}
+FDF模板名字:${inherits}
+ID索引:${createContext}
+此处name可以自定义，类型和模版填写fdf文件中的内容。通过此函数创建的Frame无法获取到子Frame*/
+public function createFrameByTag(string typeName, string name, framehandle owner, string inherits, integer createContext) returns framehandle
+	verifyFrameNameLength(name)
+	return framehandle(DzCreateFrameByTagName(typeName, name, owner.id, inherits, createContext))
+/** 新建Frame[ByTag] 父节点为gameui，id为0，名字为ui_name*/
+public function createFrameByTag(string typeName) returns framehandle
+	return createFrameByTag(typeName, "ui_name", GAME_UI, "template", 0)
+/** 新建Frame[ByTag] 父节点，id为0，名字为ui_name*/
+public function createFrameByTag(string typeName, framehandle owner) returns framehandle
+	return createFrameByTag(typeName, "ui_name", owner, "template", 0)
+/** 销毁UI控件 */
+public function framehandle.remove()
+	DzDestroyFrame(this.id)
+
+
+
+/** 清空控件的所有锚点 */
+public function framehandle.clearAllPoints()
+	DzFrameClearAllPoints(this.id)
+
+/** 移动控件所有锚点到目标控件上 */
+public function framehandle.setAllPoints(framehandle relative)
+	DzFrameSetAllPoints(this.id, relative.id)
+
+
+
+/** 获取控件的名字 */
+public function framehandle.getName() returns string
+	return DzFrameGetName(this.id)
+
+/** 点击控件 */
+public function framehandle.click()
+	DzClickFrame(this.id)
+
+/** 获取控件内的文字
+（支持EditBox,TextFrame,TextArea,SimpleFontString） 
+*/
+public function framehandle.getText() returns string
+	return DzFrameGetText(this.id)
+
+/** 设置控件文本
+设置控件的文本为${text}
+(支持EditBox,TextFrame,TextArea,SimpleFontString、GlueEditBoxWar3、SlashChatBox、TimerTextFrame、TextButtonFrame、GlueTextButton) 
+*/
+public function framehandle.setText(string text)
+	DzFrameSetText(this.id, text)
+
+// /** 设置玩家UI控件文本 */
+// public function framehandle.setText(player p, string text)
+// 	if localPlayer == p or p == null
+// 		this.setText(text)
+
+/** 获取控件Text的字数限制（支持EditBox） */
+public function framehandle.getTextSizeLimit() returns integer
+	return DzFrameGetTextSizeLimit(this.id)
+
+/** 设置控件Text的字数限制 */
+public function framehandle.setTextSizeLimit(integer size)
+	DzFrameSetTextSizeLimit(this.id, size)
+
+// /** 设置控件文字颜色（支持TextFrame, EditBox） 
+// RGBA颜色:${color}
+// */
+// public function framehandle.setTextColor(colorA color)
+// 	DzFrameSetTextColor(this.id, DzGetColor(color.red, color.green, color.blue, color.alpha))
+
+/** 设置控件文字颜色（支持TextFrame, EditBox） 
+颜色:${color}
+*/
+public function framehandle.setTextColor(integer color)
+	DzFrameSetTextColor(this.id, color)
+
+/** 设置UI控件焦点 */
+public function framehandle.setFocus(bool flag)
+	DzFrameSetFocus(this.id, flag)
+
+/** 设置玩家UI控件焦点 */
+public function framehandle.setFocus(player p, bool flag)
+	if localPlayer == p or p == null
+		this.setFocus(flag)
+
+/**禁用并立即启用指定控件来移除该控件的焦点(SimpleFrame必须这样)*/
+public function framehandle.unfocus()
+	if this.isEnabled()
+		this.disable()
+		this.enable()
+	else
+		this.enable()
+		this.disable()
+
+	this.setFocus(false)
+
+/** (指定玩家)禁用并立即启用指定控件来移除该控件的焦点(SimpleFrame必须这样) */
+public function framehandle.unfocus(player p)
+	if this.isEnabled(p)
+		this.disable(p)
+		this.enable(p)
+	else
+		this.enable(p)
+		this.disable(p)
+
+	this.setFocus(p, false)    
+
+/** 设置模型（支持Sprite、Model、StatusBar）
+模型文件:${modelFile}
+ModelType:${modelType}
+Flag:${flag}
+ */
+public function framehandle.setModel(string modelFile, int modelType, int flag)
+	DzFrameSetModel(this.id, modelFile, modelType, flag)
+
+/** 获取控件是否启用 */
+public function framehandle.isEnabled() returns bool
+	return DzFrameGetEnable(this.id)
+	
+/** 获取-玩家-控件是否启用 */
+public function framehandle.isEnabled(player p) returns boolean
+	return localPlayer == p or p == null ? this.isEnabled() : false
+
+/** UI控件启用/禁用 */
+public function framehandle.setEnabled(bool enabled)
+	DzFrameSetEnable(this.id, enabled)
+
+/** UI控件启用 */
+public function framehandle.enable()
+	this.setEnabled(true)
+
+/** UI控件禁用 */
+public function framehandle.disable()
+	this.setEnabled(false)
+	
+/** 指定玩家UI控件启用 */
+public function framehandle.enable(player p)
+	if localPlayer == p or p == null
+		this.enable()
+	
+/** 指定玩家UI控件禁用 */
+public function framehandle.disable(player p)
+	if localPlayer == p or p == null
+		this.disable()
+
+/** 获取控件的透明度(0-255) */
+public function framehandle.getAlpha() returns int
+	return DzFrameGetAlpha(this.id)
+
+/** 设置控件透明度（0-255） */
+public function framehandle.setAlpha(int alpha)
+	DzFrameSetAlpha(this.id, alpha)
+
+/** 指定玩家设置控件透明度（0-255） */
+public function framehandle.setAlpha(player p, int alpha)
+	if localPlayer == p or p == null
+		this.setAlpha(alpha)
+
+/** 设置控件Sprite动画
+播放序号:${animId}
+自动播放:${autoCast} 
+*/
+public function framehandle.setSpriteAnimate(int animId, bool autoCast)
+	DzFrameSetAnimate(this.id, animId, autoCast)
+/** 设置动画进度（autocast为false时可用）
+*/
+public function framehandle.setSpriteAnimateOffset(real offset)
+	DzFrameSetAnimateOffset(this.id, offset)
+/** 设置控件贴图（支持Backdrop、SimpleStatusBar）
+贴图路径:${texFile}
+是否平铺${flag} 
+*/
+public function framehandle.setTexture(string texFile, integer flag)
+	DzFrameSetTexture(this.id, texFile, flag)
+
+public function framehandle.setTexture(string texFile)
+	DzFrameSetTexture(this.id, texFile, 0)
+
+/** 指定玩家设置控件贴图（支持Backdrop、SimpleStatusBar） 
+玩家:${p}
+贴图路径:${texFile}
+是否平铺${flag}
+*/
+public function framehandle.setTexture(player p, string texFile, integer flag)
+	if localPlayer == p or p == null
+		this.setTexture(texFile, flag)
+
+/** 设置控件缩放 */
+public function framehandle.setScale(real scale)
+	DzFrameSetScale(this.id, scale)
+
+/** 设置控件的Tooltip提示
+指定控件:${tooltip}
+*/
+public function framehandle.setTooltip(framehandle tooltip)
+	DzFrameSetTooltip(this.id, tooltip.id)
+
+/** 限制鼠标只能在控件内移动 */
+public function framehandle.cageMouse(bool enable)
+	DzFrameCageMouse(this.id, enable)
+
+/** 获取控件的当前值（支持Slider、SimpleStatusBar、StatusBar） */
+public function framehandle.getValue() returns real
+	return DzFrameGetValue(this.id)
+
+/** 设置控件的当前值（支持Slider、SimpleStatusBar、StatusBar） */
+public function framehandle.setValue(real value)
+	DzFrameSetValue(this.id, value)
+
+/** 设置控件的最小、最大值（支持Slider、SimpleStatusBar、StatusBar）*/
+public function framehandle.setMinMax(real minValue, real maxValue)
+	DzFrameSetMinMaxValue(this.id, minValue, maxValue)
+
+/** 设置控件Step值（支持Slider）*/
+public function framehandle.setStepSize(real stepSize)
+	DzFrameSetStepValue(this.id, stepSize)
+
+// /** Sets the width of the frame (sets the height to its current height) */
+// public function framehandle.setWidth(real width)
+// 	BlzFrameSetSize(this, width, this.getHeight())
+
+// /** Sets the height of the frame (sets the width to its current width) */
+// public function framehandle.setHeight(real height)
+// 	BlzFrameSetSize(this, this.getWidth(), height)
+
+
+
+/** 设置控件颜色（支持SimpleStatusBar）*/
+public function framehandle.setVertexColor(integer color)
+	DzFrameSetVertexColor(this.id, color)
+
+/**设置控件层级优先级。0为穿透
+(如果多个控件相互覆盖，则具有最高级别的控件将接收鼠标事件，并将在其他控件的上方绘制。
+如果多个控件具有相同的级别，则最后创建的控件将具有优先级)*/
+public function framehandle.setLevel(integer level)
+	DzFrameSetPriority(this.id, level)
+
+/** 获取控件的父级 */
+public function framehandle.getParent() returns framehandle
+	return framehandle(DzFrameGetParent(this.id))
+
+/**获取鼠标所在位置的用户界面控件(伪全屏获取不到，设置改建后获取不到，移动快了获取不到手动点才刷新，不好用的话用坐标判断)*/
+public function framehandle.getMouseFocus() returns framehandle
+	return framehandle(DzGetMouseFocus())
+
+/** 设置控件的父级 */
+public function framehandle.setParent(framehandle parent)
+	DzFrameSetParent(this.id, parent.id)
+
+/** 获取控件的高度(Dz没有设置宽度) */
+public function framehandle.getHeight() returns real
+	return DzFrameGetHeight(this.id)
+
+// /** Returns the frame's width */
+// public function framehandle.getWidth() returns real
+// 	return BlzFrameGetWidth(this)
+
+
+/** 设置控件文本对齐方式(支持TextFrame、SimpleFontString、SimpleMessageFrame)
+设置居中
+    0-左上 2-左中 4-左下 
+    16中上 18-居中 20-中下 
+    32-右上 34-右中 36-右下
+*/
+public function framehandle.setTextAlignment(textaligntype align)
+	// textaligntype vert, textaligntype horz
+	DzFrameSetTextAlignment(this.id, align.id)
+
+/** 原生UI控件重置锚点 */
+public function enableUIAutoPosition(bool flag)
+	DzOriginalUIAutoResetPoint(flag)
+
+/** 隐藏所有界面UI控件元素(不再在地图初始化时调用则会残留小地图和时钟模型 )*/
+public function hideOriginFrames()
+	DzFrameHideInterface()
+
+/** 加载Toc文件列表(载入自定义fdf列表文件)*/
+public function loadTOCFile(string tocFile)
+	DzLoadToc(tocFile)
+
+
+
+// public function enableCursor()
+// 	BlzEnableCursor(true)
+
+// public function disableCursor()
+// 	BlzEnableCursor(false)
+
+// public function setCursorEnabled(bool flag)
+// 	BlzEnableCursor(flag)
+
+// /** Get number of children frames of given frame. Only direct child frames are counted */ 
+// public function framehandle.getChildrenCount() returns int
+// 	return BlzFrameGetChildrenCount(this)
+
+// /** Get child frame handle from given index */
+// public function framehandle.getChild(int index) returns framehandle
+// 	return BlzFrameGetChild(this, index)

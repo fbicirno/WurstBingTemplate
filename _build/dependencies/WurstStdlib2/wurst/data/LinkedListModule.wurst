@@ -1,0 +1,114 @@
+package LinkedListModule
+
+/** Turns a class into a linked list where each instance knows it's previous
+	and next member in the list */
+public module LinkedListModule
+	static thistype first = null
+	static thistype last = null
+	static int size = 0
+	thistype prev
+	thistype next
+
+	construct()
+		size++
+		if size == 1
+			first = this
+			prev = null
+		else
+			prev = last
+			last.next = this
+			first.prev = this
+		next = null
+		last = this
+
+	static function getFirst() returns thistype
+		return first
+
+	function getNext() returns thistype
+		if next == null
+			return first
+		return next
+
+	function getPrev() returns thistype
+		if prev == null
+			return last
+		return prev
+
+	function remove()
+		size--
+		if this != first
+			prev.next = next
+		else
+			first = next
+		if this != last
+			next.prev = prev
+		else
+			last = prev
+
+	ondestroy
+		remove()
+
+	/** An iterator which iterates over all instances of this class */
+	static function iterator() returns Iterator
+		return new Iterator(true)
+
+	private static let staticItr = new Iterator(false)
+
+	/** An iterator which iterates over all instances of this class */
+	static function staticItr() returns Iterator
+		return staticItr..reset()
+
+	/** An iterator which iterates over all instances of this class in reverse */
+	static function backIterator() returns BackIterator
+		return new BackIterator(true)
+
+	private static let staticBackItr = new BackIterator(false)
+
+	/** An iterator which iterates over all instances of this class in reverse */
+	static function staticBackItr() returns BackIterator
+		return staticBackItr..reset()
+
+	static class Iterator
+		LinkedListModule.thistype current = first
+		protected bool destroyOnClose
+
+		construct(bool destroyOnClose)
+			this.destroyOnClose = destroyOnClose
+
+		function hasNext() returns boolean
+			return current != null
+
+		function next() returns LinkedListModule.thistype
+			let res = current
+			current = current.next
+			return res
+
+		function reset()
+			current = first
+
+		function close()
+			if destroyOnClose
+				destroy this
+
+	static class BackIterator
+		LinkedListModule.thistype current = last
+		protected bool destroyOnClose
+
+		construct(bool destroyOnClose)
+			this.destroyOnClose = destroyOnClose
+
+		function hasNext() returns boolean
+			return current != null
+
+		function next() returns LinkedListModule.thistype
+			let res = current
+			current = current.prev
+			return res
+
+		function reset()
+			current = last
+
+		function close()
+			if destroyOnClose
+				destroy this
+

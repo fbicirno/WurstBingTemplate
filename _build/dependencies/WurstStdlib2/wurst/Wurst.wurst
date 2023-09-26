@@ -1,0 +1,13 @@
+package Wurst
+import public _Handles
+import public Maths
+import public Vectors
+import public Printing
+import public MagicFunctions
+import public Basics
+import public Wurstunit
+import public TypeCasting
+import public Colors
+import public Annotations
+import public EventHelper
+import public StdLibConfig

@@ -1,0 +1,17 @@
+{
+  "wurst.javaOpts": [
+    "-XX:+UseG1GC",
+    "-XX:+UseStringDeduplication",
+    "-XX:+AggressiveOpts",
+    "-Xmx4G"
+  ],
+  "files.associations": {
+    "wurst.build": "yaml"
+  },
+  "search.useIgnoreFiles": false,
+  "yaml.schemas": {
+    "./.vscode/wbschema.json": "/wurst.build"
+  },
+  "wurst.wurstJar": "C:\\Users\\z\\.wurst\\wurstscript.jar",
+  "wurst.wc3path": ""
+}

@@ -1,0 +1,129 @@
+package BZ_Hardware
+
+public class DzMouseKey
+    static constant left=1//鼠标左键
+    static constant right=2//鼠标右键
+
+public class KeyBoardCode
+    static constant A = 'A'
+    static constant B = 'B'
+    static constant C = 'C'
+    static constant D = 'D'
+    static constant E = 'E'
+    static constant F = 'F'
+    static constant G = 'G'
+    static constant H = 'H'
+    static constant I = 'I'
+    static constant J = 'J'
+    static constant K = 'K'
+    static constant L = 'L'
+    static constant M = 'M'
+    static constant N = 'N'
+    static constant O = 'O'
+    static constant P = 'P'
+    static constant Q = 'Q'
+    static constant R = 'R'
+    static constant S = 'S'
+    static constant T = 'T'
+    static constant U = 'U'
+    static constant V = 'V'
+    static constant W = 'W'
+    static constant X = 'X'
+    static constant Y = 'Y'
+    static constant Z = 'Z'
+    static constant _0= 48//0
+    static constant _1= 49//1
+    static constant _2= 50//2
+    static constant _3= 51//3
+    static constant _4= 52//4
+    static constant _5= 53//5
+    static constant _6= 54//6
+    static constant _7= 55//7
+    static constant _8= 56//8
+    static constant _9= 57//9
+    static constant tab   = 9
+    static constant shift = 16
+    static constant ctrl  = 17
+    static constant alt   = 18
+    static constant capLock = 19
+    static constant space = 32
+    static constant F2 = 113
+    static constant F3 = 114
+    static constant F4 = 115
+    static constant F8 = 119
+    static constant boLang = 192
+
+public class GameKeyStatus
+    static constant press = 1 //点击
+    static constant release = 0 //释放
+
+// GameKey_Tab=0,gamekey,515,Tab
+// GameKey_Space=0,gamekey,32,空格
+// GameKey_Enter=0,gamekey,513,回车
+// GameKey_Backspace=0,gamekey,514,退格
+// GameKey_Shift=0,gamekey,0,Shift
+// GameKey_Tab=0,gamekey,516,→
+// GameKey_Tab=0,gamekey,517,↑
+// GameKey_Tab=0,gamekey,518,←
+// GameKey_Tab=0,gamekey,519,↓
+public class Hard
+    /**获取鼠标在游戏内的坐标*/
+    @inline static function mouseTerrainPos( )returns vec3
+        return vec3(DzGetMouseTerrainX(),DzGetMouseTerrainY(),DzGetMouseTerrainZ()) 
+
+    /**鼠标是否在游戏内*/
+    @inline static function isMouseOverUI( )returns boolean 
+        return DzIsMouseOverUI()
+
+    /**获取鼠标屏幕坐标*/
+    @inline static function mouse( )returns vec2 
+        return vec2(DzGetMouseX().toReal(),DzGetMouseY().toReal())
+    /**获取鼠标游戏窗口坐标*/
+    @inline static function mouseRelative() returns vec2
+        return vec2(DzGetMouseXRelative().toReal(), DzGetMouseYRelative().toReal())
+    /**将鼠标光标放置在屏幕的指定的xy点上。
+        使用窗口的坐标系（以像素为单位），其中（0，0）为游戏窗口的左上角，Y轴的正方向为向下*/
+    @inline static function setMousePos( integer x, integer y)
+        DzSetMousePos(x,y)
+    /**获取触发的按键码*/
+    @inline static function triggerKey() returns integer 
+        return DzGetTriggerKey()
+
+    /**获取滚轮delta*/
+    @inline static function wheelDelta() returns integer 
+        return DzGetWheelDelta()
+
+    /**判断按键是否按下*/
+    @inline static function isKeyDown( integer iKey)returns boolean
+        return DzIsKeyDown(iKey)
+
+    /**获取触发硬件事件的玩家*/
+    @inline static function triggerKeyPlayer() returns player 
+        return DzGetTriggerKeyPlayer()
+
+    /**获取war3窗口宽度高度*/
+    @inline static function windowWH() returns vec2 
+        return vec2(DzGetWindowWidth().toReal(),DzGetWindowHeight().toReal())
+
+    /**获取war3窗口XY坐标*/
+    @inline static function windowXY() returns vec2 
+        return vec2(DzGetWindowX().toReal(),DzGetWindowY().toReal())
+
+    /**注册war3窗口大小变化事件*/
+    @inline static function TriggerRegisterWindowResizeEventByCode( trigger trig, boolean sync, code funcHandle)
+        DzTriggerRegisterWindowResizeEventByCode(trig,sync,funcHandle)
+    /**判断窗口是否激活*/
+    @inline static function IsWindowActive() returns boolean 
+        return DzIsWindowActive()
+
+// //设置内存数值
+// public function exMemory(integer address, real value)
+//     DzSetMemory(  address,  value )
+
+// //设置单位ID
+// public function unit.exId(int id)
+//     DzSetUnitID(  this,  id )
+
+//设置小地图背景图片
+public function setMiniMapPath(string map)
+    DzSetWar3MapMap( map )

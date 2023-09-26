@@ -1,0 +1,231 @@
+package BuffObjEditing
+import AbilityObjEditing
+import ObjectIds
+import ObjectIdGenerator
+
+/**  You should use 'createBuffObject' inside compiletime expressions:
+	let someBuff = compiletime(createBuffObject("Yes", "cool", Icons.bTNFarm))
+
+	And then add the 'abilId' to the target to apply the buff.	*/
+public tuple buffTuple(int abilId, int buffId)
+
+/** Creates an ability and buff based on Tornado aura that allows to display a buff on units without side effects */
+public function createDummyBuffObject(string name, string tooltip, string iconpath) returns buffTuple
+	return createDummyBuffObject(name, tooltip, iconpath, "")
+
+/** Creates an ability and buff  based on Tornado aura that allows to display a buff on units without side effects */
+public function createDummyBuffObject(string name, string tooltip, string iconpath, string effectPath) returns buffTuple
+	return createDummyBuffObject(name, tooltip, iconpath, effectPath, "origin")
+
+/** Creates an ability and buff  based on Tornado aura that allows to display a buff on units without side effects */
+public function createDummyBuffObject(string name, string tooltip, string iconpath, string effectPath, string attachmentPoint) returns buffTuple
+	let abilId = ABIL_ID_GEN.next()
+	let buffId = BUFF_ID_GEN.next()
+
+	if compiletime
+		new BuffDefinition(buffId, 'Basl')
+			..setName(1, name)
+			..setTooltipNormal(1, name)
+			..setTooltipNormalExtended(1, tooltip)
+			..setIcon(iconpath)
+
+		new AbilityDefinitionAuraSlow(abilId)
+			..setName("Aura Dummy: " + name)
+			..setMovementSpeedFactor(1, 0)
+			..setBuffs(1, buffId.toRawCode())
+			..presetIcon(iconpath)
+			..setArtTarget("")
+			..setTargetsAllowed(1, "self")
+			..setArtTarget(effectPath)
+			..setTargetAttachmentPoint(attachmentPoint)
+			..setEditorSuffix("wurst")
+
+	return buffTuple(abilId, buffId)
+
+public class BuffDefinition
+	ObjectDefinition def
+
+	protected int newId
+	protected int baseId
+
+	function getNewId() returns int
+		return newId
+
+	function getBaseId() returns int
+		return baseId
+
+	construct(int newId, int baseId)
+		this.newId = newId
+		this.baseId = baseId
+		def = createObjectDefinition("w3h", newId, baseId)
+
+	function setName(int level, string value)
+		def.setLvlDataString("fnam",  level, 0,  value)
+
+	function setEditorSuffix(int level, string value)
+		def.setLvlDataString("fnsf",  level, 0,  value)
+
+	function setRace(int level, string value)
+		def.setLvlDataString("frac",  level, 0,  value)
+
+	function setIconNormal(int level, string value)
+		def.setLvlDataString("fart",  level, 0,  value)
+
+	/** Sets the icon's path for the buff obj, add "@!!" as prefix of the icon name to overide the default path by a custom path */
+	function setIcon(string name)
+		string s = name
+		if (name.length() < 20 or not name.startsWith("ReplaceableTextures")) and not name.startsWith("@!!")
+			 s = "ReplaceableTextures\\CommandButtons\\" + s
+		if not name.endsWith(".blp")
+			s += ".blp"
+
+		setIconNormal(1, s)
+
+	function setCaster(int level, string value)
+		def.setLvlDataString("fcat",  level, 0,  value)
+
+	@deprecated("use #setArtTarget() instead")
+	function setTarget(int level, string value)
+		def.setLvlDataString("ftat",  level, 0,  value)
+
+	function setArtTarget(int level, string value)
+		def.setLvlDataString("ftat",  level, 0,  value)
+
+	@deprecated("use #setArtSpecial() instead")
+	function setSpecial(int level, string value)
+		def.setLvlDataString("fsat",  level, 0,  value)
+
+	function setArtSpecial(int level, string value)
+		def.setLvlDataString("fsat",  level, 0,  value)
+
+	function setEffect(int level, string value)
+		def.setLvlDataString("feat",  level, 0,  value)
+
+	function setAreaEffect(int level, string value)
+		def.setLvlDataString("faea",  level, 0,  value)
+
+	function setMissileArt(int level, string value)
+		def.setLvlDataString("fmat",  level, 0,  value)
+
+	function setMissileSpeed(int level, int value)
+		def.setLvlDataInt("fmsp",  level, 0,  value)
+
+	function setMissileArc(int level, real value)
+		def.setLvlDataReal("fmac",  level, 0,  value)
+
+	function setMissileHomingEnabled(int level, boolean value)
+		def.setLvlDataBoolean("fmho",  level, 0,  value)
+
+	function setTargetAttachments(int level, int value)
+		def.setLvlDataInt("ftac",  level, 0,  value)
+
+	function setTargetAttachmentPoint0(int level, string value)
+		def.setLvlDataString("fta0",  level, 0,  value)
+
+	function setTargetAttachmentPoint1(int level, string value)
+		def.setLvlDataString("fta1",  level, 0,  value)
+
+	function setTargetAttachmentPoint2(int level, string value)
+		def.setLvlDataString("fta2",  level, 0,  value)
+
+	function setTargetAttachmentPoint3(int level, string value)
+		def.setLvlDataString("fta3",  level, 0,  value)
+
+	function setTargetAttachmentPoint4(int level, string value)
+		def.setLvlDataString("fta4",  level, 0,  value)
+
+	function setTargetAttachmentPoint5(int level, string value)
+		def.setLvlDataString("fta5",  level, 0,  value)
+
+	function setCasterAttachments(int level, int value)
+		def.setLvlDataInt("fcac",  level, 0,  value)
+
+	function setSpecialAttachmentPoint(int level, string value)
+		def.setLvlDataString("fspt",  level, 0,  value)
+
+	function setTooltipNormal(int level, string value)
+		def.setLvlDataString("ftip",  level, 0,  value)
+
+	function setTooltipNormalExtended(int level, string value)
+		def.setLvlDataString("fube",  level, 0,  value)
+
+	function setEffectSound(int level, string value)
+		def.setLvlDataString("fefs",  level, 0,  value)
+
+	function setEffectSoundLooping(int level, string value)
+		def.setLvlDataString("fefl",  level, 0,  value)
+
+	function setName(string value)
+		setName(1, value)
+
+	function setEditorSuffix(string value)
+		setEditorSuffix(1, value)
+
+	function setRace(string value)
+		setRace(1, value)
+
+	function setCaster(string value)
+		setCaster(1, value)
+
+	function setArtTarget(string value)
+		setArtTarget(1, value)
+
+	function setArtSpecial(string value)
+		setArtSpecial(1, value)
+
+	function setEffect(string value)
+		setEffect(1, value)
+
+	function setAreaEffect(string value)
+		setAreaEffect(1, value)
+
+	function setMissileArt(string value)
+		setMissileArt(1, value)
+
+	function setMissileSpeed(int value)
+		setMissileSpeed(1, value)
+
+	function setMissileArc(real value)
+		setMissileArc(1, value)
+
+	function setMissileHomingEnabled(boolean value)
+		setMissileHomingEnabled(1, value)
+
+	function setTargetAttachments(int value)
+		setTargetAttachments(1, value)
+
+	function setTargetAttachmentPoint0(string value)
+		setTargetAttachmentPoint0(1, value)
+
+	function setTargetAttachmentPoint1(string value)
+		setTargetAttachmentPoint1(1, value)
+
+	function setTargetAttachmentPoint2(string value)
+		setTargetAttachmentPoint2(1, value)
+
+	function setTargetAttachmentPoint3(string value)
+		setTargetAttachmentPoint3(1, value)
+
+	function setTargetAttachmentPoint4(string value)
+		setTargetAttachmentPoint4(1, value)
+
+	function setTargetAttachmentPoint5(string value)
+		setTargetAttachmentPoint5(1, value)
+
+	function setCasterAttachments(int value)
+		setCasterAttachments(1, value)
+
+	function setSpecialAttachmentPoint(string value)
+		setSpecialAttachmentPoint(1, value)
+
+	function setTooltipNormal(string value)
+		setTooltipNormal(1, value)
+
+	function setTooltipNormalExtended(string value)
+		setTooltipNormalExtended(1, value)
+
+	function setEffectSound(string value)
+		setEffectSound(1, value)
+
+	function setEffectSoundLooping(string value)
+		setEffectSoundLooping(1, value)

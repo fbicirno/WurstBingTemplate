@@ -1,0 +1,96 @@
+package ChannelAbilityPreset
+import NoWurst
+import public AbilityObjEditing
+import public ObjectIds
+import public ObjectIdGenerator
+import OrderStringFactory
+import BitSet
+import Annotations
+
+var odf = new OrderStringFactory()
+@compiletime function initOdf()
+	odf = new OrderStringFactory()
+
+
+public enum Option
+	VISIBLE
+	TARGETIMAGE
+	PHYSICALSPELL
+	UNIVERSALSPELL
+	UNIQUECAST
+
+public enum Targettype
+	NONE
+	UNIT
+	POINT
+	POINTUNIT
+	PASSIVE
+
+public function Targettype.toString() returns string
+	switch this
+		case NONE
+			return "Instant Cast"
+		case Targettype.POINT
+			return "Point Target"
+		case Targettype.UNIT
+			return "Unit Target"
+		case Targettype.POINTUNIT
+			return "Point & Unit Target"
+		case PASSIVE
+			return "Passive"
+
+public class ChannelAbilityPreset extends AbilityDefinitionIllidanChannel
+	private bitset optionSet = bitset(0)
+	private string orderString
+
+	function getOrderString() returns string
+		return orderString
+
+	construct(int newId, int lvls, boolean removeChannelProperties, TooltipGenerator tgen)
+		super(newId)
+		registerTooltipGenerator(tgen)
+		setup(lvls, removeChannelProperties)
+
+	construct(int newId, int lvls, boolean removeChannelProperties)
+		super(newId)
+		setup(lvls, removeChannelProperties)
+
+	function setup(int lvls, boolean removeChannelProperties)
+		this.lvls = lvls
+		tooltipStartListen()
+		setLevels(lvls)
+		tooltipStopListen(false)
+		orderString = odf.getOrderString(true)
+		presetBaseOrderID(_lvl -> orderString)
+		if removeChannelProperties
+			removeChannelProperties(true)
+
+	function makeUnitSpell(int mana, real cooldown)
+		setHeroAbility(false)
+		presetManaCost(lvl -> mana)
+		presetCooldown(lvl -> cooldown)
+
+	function removeChannelProperties(boolean removeVisuals)
+		removeChannelProperties(removeVisuals, true)
+
+	function removeChannelProperties(boolean removeVisuals, boolean makeVisible)
+		presetDisableOtherAbilities(lvl -> false)
+		presetFollowThroughTime(lvl -> 0.)
+		presetArtDuration(lvl -> 0.)
+		if makeVisible
+			presetOption(Option.VISIBLE, true)
+		if removeVisuals
+			setArtCaster("")
+			setArtEffect("")
+			setArtSpecial("")
+			setArtTarget("")
+
+	function presetTargetTypes(Targettype ttype)
+		presetTargetType(lvl -> ttype castTo int)
+
+	function presetOption(Option opt, boolean flag)
+		optionSet = optionSet.set(opt castTo int, flag)
+		presetOptions(lvl -> optionSet.val)
+
+	function hasOption(Option option) returns boolean
+		return optionSet.get(option castTo int)

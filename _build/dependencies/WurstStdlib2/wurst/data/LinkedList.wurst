@@ -1,0 +1,590 @@
+package LinkedList
+import NoWurst
+import TypeCasting
+import Integer
+import String
+import ClosureForGroups
+import Real
+import Annotations
+
+/**
+*双链表实现，实现所有常见的列表、堆栈和队列操作。
+*允许所有元素（包括null）。
+*如果你需要魔兽handle列表，可以使用Typecasting软件包。
+*LinkedList通常应该在需要列表的任何地方使用，因为它们是最通用的
+*而且在日常操作中速度很快。如果您需要更快地包含或访问大列表上的操作，
+*使用HashList。如果你想把每个元素的发生限制到一个，那么考虑HashSet。
+*/
+public class LinkedList<T>
+	private var dummy = new LLEntry<T>(null, null, null)
+	protected var size = 0
+
+	private LLIterator<T> staticItr = null
+	private LLBackIterator<T> staticBackItr = null
+
+	/**通过将其他列表中的所有元素复制到新列表中来创建新列表*/
+	construct(thistype base)
+		dummy.next = dummy
+		dummy.prev = dummy
+		for elem in base
+			add(elem)
+
+	/**创建一个新的空列表*/
+	construct()
+		dummy.next = dummy
+		dummy.prev = dummy
+
+	/** 将一个或多个元素添加到列表末尾（堆栈顶部、队列开头） */
+	function add(vararg T elems)
+		for elem in elems
+			let entry = new LLEntry<T>(elem, dummy.prev, dummy)
+			dummy.prev.next = entry
+			dummy.prev = entry
+			size++
+
+	/** 将元素中的所有元素添加到此列表的末尾 */
+	function addAll(LinkedList<T> elems)
+		for elem in elems
+			add(elem)
+
+	/**将其他列表中的所有元素添加到此列表的末尾，并将其从提供的列表中删除。
+	它不会在内部添加/删除元素，只会重新指向列表节点的内部指针。
+	另一个列表将为空，但不会被销毁*/
+	function splice(LinkedList<T> other)
+		dummy.prev.next = other.dummy.next
+		dummy.prev.next.prev = dummy.prev
+		dummy.prev = other.dummy.prev
+		dummy.prev.next = dummy
+		size += other.size
+		other.dummy.next = other.dummy
+		other.dummy.prev = other.dummy
+		other.size = 0
+
+	/**返回指定索引处的元素*/
+	function get(int index) returns T
+		return getEntry(index).elem
+
+	/** Returns the index of the specified element or -1 is it doesn't exist */
+	function indexOf(T t) returns int
+		var entry = dummy.next
+		var idx = 0
+		while entry != dummy
+			if entry.elem == t
+				return idx
+			entry = entry.next
+			idx++
+		return -1
+
+	/** Sets the element at the specified index */
+	function set(int index, T elem)
+		getEntry(index).elem = elem
+
+	/** Adds an element to the end of the list (top of stack, beginning of queue) */
+	function push(T elem)
+		add(elem)
+
+	/**返回列表中的第一个元素*/
+	function getFirst() returns T
+		return dummy.next.elem
+
+	/**返回并移除第一个添加的元素，先进先出 (FIFO) */
+	function dequeue() returns T
+		let top = dummy.next
+		T result = null
+		if top != dummy
+			result = top.elem
+			removeEntry(top)
+		return result
+
+	/** 返回并删除最后添加的元素，后进先出（LIFO） */
+	function pop() returns T
+		let top = dummy.prev
+		T result = null
+		if top != dummy
+			result = top.elem
+			removeEntry(top)
+		return result
+
+	/**返回最后添加的元素 */
+	function peek() returns T
+		return dummy.prev.elem
+
+	/** Returns whether the lists contains the specified element */
+	@deprecated("Use .has instead") function contains(T elem) returns boolean
+		return has(elem)
+
+	/** Returns whether the lists contains the specified element */
+	function has(T elem) returns boolean
+		var entry = dummy.next
+		while entry != dummy
+			if entry.elem == elem
+				return true
+			entry = entry.next
+		return false
+
+	/** Removes the element and it's entry at the given index */
+	function removeAt(int index) returns T
+		let entry = getEntry(index)
+		entry.prev.next = entry.next
+		entry.next.prev = entry.prev
+		let res = entry.elem
+		destroy entry
+		size--
+		return res
+
+	/**从列表中删除第一个？出现的元素。
+	如果从列表中删除了元素，则返回true*/
+	function remove(T elem) returns bool
+		var result = false
+		var entry = dummy.next
+		while entry != dummy
+			if entry.elem == elem
+				removeEntry(entry)
+				result = true
+				break
+			entry = entry.next
+		return result
+
+	/** gets the size of the list */
+	@deprecated("Use .size() instead.") function getSize() returns int
+		return size
+
+	/** gets the size of the list (java-compat wrapper) */
+	function size() returns int
+		return size
+
+	/** 检查此列表是否为空 */
+	function isEmpty() returns boolean
+		return size == 0
+
+	/** Returns a shallow copy of this list */
+	function copy() returns LinkedList<T>
+		let list = new LinkedList<T>
+		for elem in this
+			list.add(elem)
+		return list
+
+	/** get the static iterator for this list */
+	function staticItr() returns LLIterator<T>
+		if staticItr == null
+			staticItr = new LLIterator<T>(this, false)
+		staticItr.reset()
+		return staticItr
+
+	/** get the static back iterator for this list */
+	function staticBackItr() returns LLBackIterator<T>
+		if staticBackItr == null
+			staticBackItr = new LLBackIterator<T>(dummy, false)
+		staticBackItr.reset()
+		return staticBackItr
+
+	/** get an iterator for this list */
+	function iterator() returns LLIterator<T>
+		return new LLIterator(this)
+
+	/** get a backiterator for this list */
+	function backiterator() returns LLBackIterator<T>
+		return new LLBackIterator(dummy)
+
+	/** adds an element to the beginning of the list */
+	function enqueue(T elem)
+		addtoStart(elem)
+
+	/** adds an element to the beginning of the list */
+	function addtoStart(T elem)
+		let entry = new LLEntry<T>(elem, dummy, dummy.next)
+		dummy.next.prev = entry
+		dummy.next = entry
+		size++
+
+	/** replaces the first occurence of 'whichElement' with 'newElement'
+		returns true when an element has been replaced,
+		false if 'whichelement' is not contained in the list
+	*/
+	function replace(T whichElement, T newElement) returns boolean
+		var current = dummy.next
+		while current != dummy
+			if current.elem == whichElement
+				current.elem = newElement
+				return true
+			current = current.next
+		return false
+
+	@deprecated("Use #removeIf")
+	function removeWhen(LinkedListPredicate<T> predicate)
+		removeIf(predicate)
+
+	/** Removes the element if the predicates returns true */
+	function removeIf(LinkedListPredicate<T> predicate)
+		let itr = iterator()
+		for elem from itr
+			if predicate.isTrueFor(elem)
+				itr.remove()
+		itr.close()
+
+		destroy predicate
+
+	/** Executes the closure for each element */
+	function forEach(LLItrClosure<T> itr) returns LinkedList<T>
+		var r = dummy.next
+		while r != dummy
+			itr.run(r.elem)
+			r = r.next
+		destroy itr
+		return this
+
+	/** Updates all elements */
+	function updateAll(LinkedListUpdater<T> f)
+		var r = dummy.next
+		while r != dummy
+			r.elem = f.update(r.elem)
+			r = r.next
+		destroy f
+
+	/** 在此列表上执行Fisher–Yates洗牌(伪随机打乱) */
+	function shuffle()
+		T array _a
+		let n = size()
+		var i0 = 0
+
+		let itr = iterator()
+		while itr.hasNext()
+			itr.next()
+			_a[i0] = itr.remove()
+			i0++
+
+		for i = n-1 downto 1
+			let j = GetRandomInt(0, i)
+			let tmp = _a[i]
+			_a[i] = _a[j]
+			_a[j] = tmp
+
+		for i = 0 to n-1
+			add(_a[i])
+
+		itr.close()
+
+	/** Returns a random element from this list or null, if empty */
+	function getRandomElement() returns T
+		return getEntry(GetRandomInt(0, size - 1)).elem
+
+	/** Adds the given element directly behind the element at the given index */
+	function addAt(T elem, int index)
+		let entryAtIndex = getEntry(index)
+		let entry = new LLEntry<T>(elem, entryAtIndex.prev, entryAtIndex)
+		entryAtIndex.prev.next = entry
+		entryAtIndex.prev = entry
+		size++
+
+	/** Sorts the list according the the comparator using merge sort */
+	function sortWith(Comparator<T> comparator)
+		if comparator != null and size() > 1
+			dummy.next = sort(comparator, dummy.next)
+			dummy.next.prev = dummy
+			var last = dummy.next
+			while last.next != dummy
+				last = last.next
+			dummy.prev = last
+
+	/** Returns the list obtained by applying the given closure to each element of the original list */
+	function map<Q>(MapClosure<T, Q> itr) returns LinkedList<Q>
+		let output = new LinkedList<Q>()
+		forEach(t -> output.add(itr.run(t)))
+		destroy itr
+		return output
+
+	/** Returns a new list of the elements that satisfy the predicate */
+	function filter(LinkedListPredicate<T> predicate) returns LinkedList<T>
+		let result = copy()
+		result.removeIf(t -> not predicate.isTrueFor(t))
+		destroy predicate
+		return result
+
+	/** 'Folds' this list into a single value of type Q
+		Example int-list sum: `list.foldl<int>(0, (i, q) -> q + i)` */
+	function foldl<Q>(Q startValue, FoldClosure<T, Q> predicate) returns Q
+		var result = startValue
+		var r = dummy.next
+		while r != dummy
+			result = predicate.run(r.elem, result)
+			r = r.next
+		destroy predicate
+		return result
+
+	/** internal merge sort */
+	private function sort(Comparator<T> comparator, LLEntry<T> e) returns LLEntry<T>
+		if e == dummy or e.next == dummy
+			return e
+
+		var second = split(e)
+		let first = sort(comparator, e)
+		second = sort(comparator, second)
+		return sortMerge(comparator, first, second)
+
+	/** internal merge */
+	private function sortMerge(Comparator<T> comparator, LLEntry<T> pa, LLEntry<T> pb) returns LLEntry<T>
+		var a = pa
+		var b = pb
+		if a == dummy
+			return b
+		if b == dummy
+			return a
+		LLEntry<T> head
+		LLEntry<T> tail
+		if comparator.compare(a.elem, b.elem) < 0
+			head = a
+			tail = a
+			a = a.next
+		else
+			head = b
+			tail = b
+			b = b.next
+
+		while true
+			if a == dummy
+				tail.next = b
+				b.prev = tail
+				break
+			if b == dummy
+				tail.next = a
+				a.prev = tail
+				break
+			if comparator.compare(a.elem, b.elem) < 0
+				tail.next = a
+				a.prev = tail
+				tail = a
+				a = a.next
+			else
+				tail.next = b
+				b.prev = tail
+				tail = b
+				b = b.next
+		return head
+
+	/** returns the middle of a fragment list */
+	private function split(LLEntry<T> e) returns LLEntry<T>
+		var normalRef = e
+		var halfRef = e
+		while(normalRef.next != dummy and normalRef.next.next != dummy)
+			normalRef = normalRef.next.next
+			halfRef = halfRef.next
+		let tmp = halfRef.next
+		halfRef.next = dummy
+		return tmp
+
+	/** Prints the content of the list */
+	function toString() returns string
+		let fold = foldl<string>("[", (i, q) -> q + (i castTo int).toString() + ",")
+		return fold.substring(0, fold.length()-1) + "]"
+
+	/** Removes all elements from the list */
+	function clear()
+		var current = dummy.next
+		while current != dummy
+			current = current.next
+			destroy current.prev
+		dummy.next = dummy
+		dummy.prev = dummy
+		size = 0
+
+	protected function getDummy() returns LLEntry<T>
+		return dummy
+
+	/** Returns the entry at the given index */
+	private function getEntry(int index) returns LLEntry<T>
+		var entry = dummy
+		for i = 0 to index
+			entry = entry.next
+		return entry
+
+	/** Removes an entry */
+	protected function removeEntry(LLEntry<T> entry)
+		entry.prev.next = entry.next
+		entry.next.prev = entry.prev
+		destroy entry
+		size--
+
+	ondestroy
+		if staticItr != null
+			destroy staticItr
+		if staticBackItr != null
+			destroy staticBackItr
+		var current = dummy.next
+		while current != dummy
+			current = current.next
+			destroy current.prev
+		destroy dummy
+
+public function asList<T>(vararg T ts) returns LinkedList<T>
+	let ll = new LinkedList<T>
+	for t in ts
+		ll.add(t)
+	return ll
+
+class LLEntry<T>
+	T elem
+	LLEntry<T> prev
+	LLEntry<T> next
+
+	construct(T elem, LLEntry<T> prev, LLEntry<T> next)
+		this.elem = elem
+		this.prev = prev
+		this.next = next
+
+public class LLIterator<T>
+	LLEntry<T>	dummy
+	LLEntry<T>	current
+	LinkedList<T> parent
+	protected var destroyOnClose = true
+
+	construct(LinkedList<T> parent)
+		this.parent  = parent
+		reset()
+
+	construct(LinkedList<T> parent, bool destroyOnClose)
+		this.parent  = parent
+		reset()
+		this.destroyOnClose = destroyOnClose
+
+	function reset()
+		this.dummy   = parent.getDummy()
+		this.current = dummy
+
+	/** Removes from the list the last element that was returned by next() (optional operation).
+	 	This call can only be made once per call to next */
+	function remove() returns T
+		if current != dummy
+			parent.removeEntry(current)
+			let removed = current.elem
+			current = current.prev
+			return removed
+		return null
+
+	/** Modifies the last element that was returned by next() (optional operation). */
+	function modify(T newval)
+		if current != dummy
+			current.elem = newval
+
+	function hasNext() returns boolean
+		return current.next != dummy
+
+	function next() returns T
+		current = current.next
+		return current.elem
+
+	function lookahead() returns T
+		T retVal = null
+		if hasNext()
+			retVal = current.next.elem
+		return retVal
+
+	function close()
+		if destroyOnClose
+			destroy this
+
+public class LLBackIterator<T>
+	LLEntry<T> dummy
+	LLEntry<T> current
+	protected bool destroyOnClose = true
+
+	construct(LLEntry<T> dummy, bool destroyOnClose)
+		this.dummy = dummy
+		reset()
+		this.destroyOnClose = destroyOnClose
+
+	construct(LLEntry<T> dummy)
+		this.dummy = dummy
+		reset()
+
+	function reset()
+		this.current = dummy
+
+	/** Modifies the last element that was returned by next() (optional operation). */
+	function modify(T newval)
+		if current != dummy
+			current.elem = newval
+
+	function hasNext() returns boolean
+		return current.prev != dummy
+
+	function next() returns T
+		current = current.prev
+		return current.elem
+
+	function lookahead() returns T
+		T retVal = null
+		if hasNext()
+			retVal = current.prev.elem
+		return retVal
+
+	function close()
+		if destroyOnClose
+			destroy this
+
+public interface LinkedListPredicate<T>
+	function isTrueFor(T t) returns boolean
+
+public interface LLItrClosure<T>
+	function run(T t)
+
+public interface LinkedListUpdater<T>
+	function update(T t) returns T
+
+public interface MapClosure<T, Q>
+	function run(T t) returns Q
+
+public interface FoldClosure<T, Q>
+	function run(T t, Q q) returns Q
+
+public interface Comparator<T>
+	function compare(T o1, T o2) returns int
+
+constant Comparator<real> realComparator = (r1, r2) -> (r1 - r2).toInt()
+public function LinkedList<real>.sort()
+	this.sortWith(realComparator)
+
+constant Comparator<int> intComparator = (i1, i2) -> i1 - i2
+public function LinkedList<int>.sort()
+	this.sortWith(intComparator)
+
+public function group.asList() returns LinkedList<unit>
+	let result = new LinkedList<unit>()
+	this.forEachFrom() u ->
+		result.add(u)
+	return result
+
+/** Joins elements from a string list into one string using a separator */
+public function LinkedList<string>.joinBy(string separator) returns string
+	var joined = ""
+	let iter = this.iterator()
+
+	for str from iter
+		if iter.hasNext()
+			joined += str + separator
+		else
+			joined += str
+
+	iter.close()
+	return joined
+
+interface ToStringClosure<T>
+	function toString(T elem) returns string
+
+public function LinkedList<T>.joinBy<T>(ToStringClosure<T> cls, string separator) returns string
+	let iter = this.iterator()
+	let strings = new LinkedList<string>
+
+	for elem from iter
+		strings.add(cls.toString(elem))
+
+	iter.close()
+	let result = strings.joinBy(separator)
+	destroy strings
+	return result
+
+/** Joins elements from a string list into one string */
+public function LinkedList<string>.join() returns string
+	return this.joinBy("")
+
+init
+	realToIndex(0.)

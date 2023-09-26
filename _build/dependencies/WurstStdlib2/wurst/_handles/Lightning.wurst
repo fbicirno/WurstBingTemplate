@@ -1,0 +1,80 @@
+package Lightning
+import NoWurst
+import Vectors
+import Colors
+
+/**主闪电链*/
+public constant LIGHTNING_SHANDIAN_ZHU = "CLPB"
+/**次闪电链*/
+public constant LIGHTNING_SHANDIAN_CI = "CLSB"
+/**吸取生命和魔法*/
+public constant LIGHTNING_XI_HPMANA = "DRAB"
+/**吸取生命*/
+public constant LIGHTNING_XI_HP = "DRAL"
+/**吸取魔法*/
+public constant LIGHTNING_XI_MANA = "DRAM"
+/**死亡之指*/
+public constant LIGHTNING_SHIWANGZHI = "AFOD"
+/**叉状闪电*/
+public constant LIGHTNING_SHANDIAN_CHA = "FORK"
+/**主医疗波*/
+public constant LIGHTNING_YILIAO_ZHU = "HWPB"
+/**次医疗波*/
+public constant LIGHTNING_YILIAO_CI = "HWSB"
+/**闪电攻击*/
+public constant LIGHTNING_SHANDIAN_JI = "CHIM"
+/**空中锁镣*/
+public constant LIGHTNING_KONG_SUO = "LEAS"
+/**法力燃烧*/
+public constant LIGHTNING_SHAO_MANA = "MBUR"
+/**魔力之焰*/
+public constant LIGHTNING_HUO_MANA = "MFPB"
+/**灵魂锁链*/
+public constant LIGHTNING_LINGHUN_SUO = "SPLK"
+
+/**新建闪电效果(与vec3版本相同，但z等于地形高度)*/
+public function addLightning(string codeName, bool checkVisibility, vec2 start, vec2 _end) returns lightning
+	return AddLightning(codeName, checkVisibility, start.x, start.y, _end.x, _end.y)
+
+/**新建闪电效果(警告，VEC3的Z值应考虑地形高度。通常z==0时，闪电在地下非常低的位置产生)*/
+public function addLightning(string codeName, bool checkVisibility, vec3 start, vec3 _end) returns lightning
+	return AddLightningEx(codeName, checkVisibility, start.x, start.y, start.z, _end.x, _end.y, _end.z)
+
+/**移动闪电效果(与vec3版本相同，但z等于地形高度)*/
+public function lightning.move(bool checkVisibility, vec2 start, vec2 _end) returns bool
+	return MoveLightning(this, checkVisibility, start.x, start.y, _end.x, _end.y)
+
+/** 移动闪电效果(警告，VEC3的Z值应考虑地形高度。通常z==0时，闪电在地下非常低的位置产生) */
+public function lightning.move(bool checkVisibility, vec3 start, vec3 _end) returns bool
+	return MoveLightningEx(this, checkVisibility, start.x, start.y, start.z, _end.x, _end.y, _end.z)
+/**设置闪电效果colorA颜色(0-255)*/
+public function lightning.setColor(colorA c) returns boolean
+	return SetLightningColor(this, c.red / 255, c.green / 255, c.blue / 255, c.alpha / 255)
+/**设置闪电效果color颜色(0-255)*/
+public function lightning.setColor(color c) returns boolean
+	return SetLightningColor(this, c.red / 255, c.green / 255, c.blue / 255, 1)
+
+/**获取闪电效果的color颜色。
+使用近似值，因为它存储在reals中*/
+public function lightning.getColor() returns color
+	return color((255 * this.getColorR() + .5).toInt(), (255 * this.getColorG() + .5).toInt(), (255 * this.getColorB() + .5).toInt())
+
+/** 获取闪电效果的colorA颜色。
+使用近似值，因为它存储在reals中 */
+public function lightning.getColorWithA() returns colorA
+	return this.getColor().withAlpha((255 * this.getColorA() + .5).toInt())
+/**获取闪电效果红色值*/
+public function lightning.getColorR() returns real
+	return GetLightningColorR(this)
+/**获取闪电效果绿色值*/
+public function lightning.getColorG() returns real
+	return GetLightningColorG(this)
+/**获取闪电效果蓝色值*/
+public function lightning.getColorB() returns real
+	return GetLightningColorB(this)
+/**获取闪电效果alpha值*/
+public function lightning.getColorA() returns real
+	return GetLightningColorA(this)
+/**销毁闪电效果*/
+public function lightning.destr() returns bool
+	return DestroyLightning(this)

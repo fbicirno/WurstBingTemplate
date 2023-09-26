@@ -1,0 +1,8 @@
+package SafetyChecks
+
+/**
+	Enables or disables various safety checks in miscellaneous libraries in Wurst.
+	Do not disable this unless you are 100% sure your code works correctly.
+	安全检查，略微减少1000行的代码使用，可能会提高效率
+**/
+@configurable public constant SAFETY_CHECKS_ENABLED = true

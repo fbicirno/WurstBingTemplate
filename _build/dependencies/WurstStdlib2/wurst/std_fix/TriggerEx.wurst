@@ -1,0 +1,29 @@
+package TriggerEx
+import NoWurst
+import Trigger
+import Hashtable
+//id类接口闭包专用哈希表
+public let listener_ht=InitHashtable()
+/** 触发器——添加条件*/
+public function trigger.addCondition(code code1)
+    let cond=Condition(code1)
+    this.addCondition(cond)
+    DestroyCondition(cond)
+
+public function trigger.registerEnterRegionEx(region whichRegion,code code1)
+    this.registerEnterRegion(whichRegion, Condition(code1))
+
+trigger br_trig=CreateTrigger()
+triggercondition br_trigc=null
+/**运行布尔表达式code*/
+public function runboolexpr(boolexpr br)
+    if br_trigc!=null
+        br_trig.removeCondition(br_trigc)
+    br_trigc=br_trig.addCondition(br)
+    br_trig.evaluate()
+
+public function saveCodeB(int parent,int kid,code cb)
+    listener_ht.saveBooleanExprHandle(parent,kid, Condition(cb))
+
+public function getCodeB(int parent,int kid) returns boolexpr
+    return listener_ht.loadBooleanExprHandle(parent,kid)

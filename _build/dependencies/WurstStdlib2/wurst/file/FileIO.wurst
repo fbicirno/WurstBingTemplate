@@ -1,0 +1,108 @@
+package FileIO
+import public ChunkedString
+import ErrorHandling
+import SafetyChecks
+import AbilityObjEditing
+import ObjectIds
+import ObjectIdGenerator
+
+/* 	FileIO for Patches 1.31 and up with chunked string support for big data.
+	Reads and writes using preload files by manipulating default ability tooltips.
+
+	Read a file:
+	>	let fileContent = new File("MyFileName.pld").readAsString()
+
+	Write a file:
+	>	new File("MyFileName.pld")..write("MyContent")..close()
+*/
+
+@configurable public constant CHUNKS_PER_FILE = 64
+
+public var CAN_READ_FILES = true
+
+public constant FILE_IO_ABIL_ID  = compiletime(ABIL_ID_GEN.next())
+public constant FILE_IO_ABIL_ID_STR = FILE_IO_ABIL_ID.toRawCode()
+
+public class File
+	var filename = ""
+
+	construct(string filename)
+		this.filename = filename
+
+	function write(player p, string content)
+		let buffer = new ChunkedString()
+		buffer.append(content)
+		write(p, buffer)
+		destroy buffer
+
+	function write(player p, ChunkedString buffer)
+		if SAFETY_CHECKS_ENABLED
+			for i = 0 to buffer.getChunkCount() - 1
+				let str = buffer.getChunk(i)
+				if validateInput(str) != null
+					error("FileIO(" + filename + ") ERROR: Invalid character |cffffcc00" + validateInput(str) + "|r")
+
+		writePreload(p, buffer)
+
+	function close()
+		destroy this
+
+	function read(player p) returns ChunkedString
+		let out = new ChunkedString(DEFAULT_CHUNK_SIZE)
+		if localPlayer == p
+			readPreload(out)
+		return out
+
+	function readAsString(player p) returns string
+		let out = read(p)
+		let str = out.getUnsafeString()
+		destroy out
+		return str
+
+	private function writePreload(player p, ChunkedString buffer)
+		if localPlayer == p
+			PreloadGenClear()
+			PreloadGenStart()
+
+			if buffer.getChunkCount() >= CHUNKS_PER_FILE
+				error("FileIO(" + filename + ") ERROR: String's chunk count exceeds the limit (" + CHUNKS_PER_FILE.toString() + ").|r")
+
+			for i = 0 to buffer.getChunkCount() - 1
+				let chunk = buffer.getChunk(i)
+				Preload("\" )\ncall BlzSetAbilityTooltip('" + FILE_IO_ABIL_ID_STR + "', \"" + chunk + "\", " + i.toString() + ")\n//")
+
+			Preload("\" )\nendfunction\nfunction a takes nothing returns nothing\n //")
+			PreloadGenEnd(this.filename)
+
+	private function readPreload(ChunkedString output)
+		Preloader(this.filename)
+
+		// Read the output
+		for i = 0 to CHUNKS_PER_FILE - 1
+			let chunk = "error"///BlzGetAbilityTooltip(FILE_IO_ABIL_ID, i)
+
+			if chunk == " "
+				break
+
+			//BlzSetAbilityTooltip(FILE_IO_ABIL_ID, " ", i)
+			output.append(chunk)
+
+
+	private static function validateInput(string content) returns string
+		for char in content
+			if (char == "\\")
+				return char
+			else if (char == "\"")
+				return char
+		return null
+
+init
+	CAN_READ_FILES = new File("FileTester.pld")..write(localPlayer, "test").readAsString(localPlayer) == "test"
+
+
+@compiletime function generateDummy()
+	let dummy = new AbilityDefinitionIllidanChannel(FILE_IO_ABIL_ID)
+		..setLevels(CHUNKS_PER_FILE)
+
+	for i = 1 to CHUNKS_PER_FILE
+		dummy.setTooltipNormal(i, " ")

@@ -1,0 +1,18 @@
+package chongfeng
+import ClosureTimers
+//冲锋函数
+
+public function unit.chongfeng(vec2 mubiao)
+    let pos=this.getPos()
+    let ang=pos.angleTo(mubiao)
+    int count=0
+    //创建一个0.03秒计时器
+    doPeriodically(0.03) (CallbackPeriodic cb) ->
+        let pos1=this.getPos() //不用担心，点自动排泄
+        let pos2=pos1.polarOffset(ang, 50)
+        this.setPos(pos2)
+        let eff=addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl", pos2)
+        eff.destr()
+        count++
+        if count>=40
+            destroy cb

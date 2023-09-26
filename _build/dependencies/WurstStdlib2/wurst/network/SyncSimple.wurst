@@ -1,0 +1,138 @@
+package SyncSimple
+import LinkedList
+import ChunkedString
+
+
+
+/* 	Simple String syncing for Patches 1.31 and up with chunked string support for big data.
+	For improved safety, sync operations are performed sequentially - one string/chunk at a time.
+
+	Sync a string:
+	>	myString.sync(p) (synced) ->
+	>		Log.info("string synced: " + synced.getUnsafeString())
+
+	Sync a ChunkedString:
+	>	myChunkedString.sync(p) (synced) ->
+	>		while synced.hasChunk()
+	>			Log.info("chunked string synced: " + synced.readChunk())
+
+*/
+
+@configurable public constant DEFAULT_PREFIX = "S"
+@configurable public constant LAST_CHUNK_PREFIX = "T"
+
+public interface BoolSyncListener
+	function onDataSynced(bool data)
+
+public interface IntSyncListener
+	function onDataSynced(int data)
+
+public interface RealSyncListener
+	function onDataSynced(real data)
+
+public interface StringSyncListener
+	function onDataSynced(string data)
+
+public interface BufferSyncListener
+	function onDataSynced(ChunkedString buffer)
+
+constant syncQueue = new LinkedList<SyncData>
+
+/** Syncs a bool from the given player. */
+public function bool.sync(player p, BoolSyncListener listener)
+	this.toString().sync(p) data ->
+		listener.onDataSynced(data.toBool())
+		destroy listener
+
+/** Syncs an int from the given player. */
+public function int.sync(player p, IntSyncListener listener)
+	this.toString().sync(p) data ->
+		listener.onDataSynced(data.toInt())
+		destroy listener
+
+/** Syncs a real from the given player. */
+public function real.sync(player p, RealSyncListener listener)
+	this.toString().sync(p) data ->
+		listener.onDataSynced(data.toReal())
+		destroy listener
+
+/** Syncs a single string from the given player. */
+public function string.sync(player p, StringSyncListener listener)
+	syncQueue.add(new SyncData(p, listener, this))
+
+	if syncQueue.size() == 1
+		checkQueue()
+
+/** Syncs a chunked string from the given player. */
+public function ChunkedString.sync(player p, BufferSyncListener listener)
+	syncQueue.add(new SyncData(p, listener, this))
+
+	if syncQueue.size() == 1
+		checkQueue()
+
+class SyncData
+	StringSyncListener slistener = null
+	BufferSyncListener blistener = null
+	player syncer = null
+	string data = null
+	ChunkedString buffer = null
+	ChunkedString syncBuffer = null
+
+	construct(player syncer, StringSyncListener slistener, string data)
+		this.slistener = slistener
+		this.data = data
+		this.syncer = syncer
+
+	construct(player syncer, BufferSyncListener blistener, ChunkedString data)
+		this.blistener = blistener
+		this.buffer = data
+		this.syncer = syncer
+		this.syncBuffer = new ChunkedString()
+
+	ondestroy
+		if slistener != null
+			destroy slistener
+		if blistener != null
+			destroy blistener
+		if buffer != null
+			destroy buffer
+
+function checkQueue()
+	if not syncQueue.isEmpty()
+		let syncData = syncQueue.getFirst()
+		if syncData.data != null
+			// string sync
+			if localPlayer == syncData.syncer
+				DzSyncData(DEFAULT_PREFIX, syncData.data)
+		else
+			// buffer sync
+			let data = syncData.buffer.readChunk()
+			let hasChunk = syncData.buffer.hasChunk()
+			if localPlayer == syncData.syncer
+				if hasChunk
+					DzSyncData(DEFAULT_PREFIX, data)
+				else
+					DzSyncData(LAST_CHUNK_PREFIX, data)
+
+init
+	// DEFAULT_PREFIX
+	CreateTrigger()..registerSyncData(DEFAULT_PREFIX)..addAction() ->
+		let eventData = DzGetTriggerSyncData()
+		let syncData = syncQueue.getFirst()
+		if syncData.data != null
+			syncData.slistener.onDataSynced(eventData)
+			syncQueue.dequeue()
+			destroy syncData
+		else
+			syncData.syncBuffer.append(eventData)
+		checkQueue()
+		
+	// LAST_CHUNK_PREFIX
+	CreateTrigger()..registerSyncData(LAST_CHUNK_PREFIX)..addAction() ->
+		let eventData = DzGetTriggerSyncData()
+		let syncData = syncQueue.getFirst()
+		syncData.syncBuffer.append(eventData)
+		syncData.blistener.onDataSynced(syncData.syncBuffer)
+		syncQueue.dequeue()
+		destroy syncData
+		checkQueue()
